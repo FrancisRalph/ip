@@ -1,10 +1,12 @@
 /**
- * Simple interactive CLI that echoes user commands and exits on 'bye'.
+ * Simple interactive CLI that manages tasks and validates user input.
  */
 public class Ralph {
+    private static final String SEP = "____________________________________________________________";
+    private static final int MAX_TASKS = 100;
+
     /**
-     * Entry point: prints a header, then reads lines from stdin.
-     * Echoes each command back to the user and stops when the user types "bye".
+     * Entry point: prints a header, then reads commands until the user exits.
      */
     public static void main(String[] args) {
         String banner = """
@@ -18,127 +20,159 @@ public class Ralph {
         System.out.println(banner);
 
         java.util.Scanner scanner = new java.util.Scanner(System.in);
-        final String SEP = "____________________________________________________________";
-
         System.out.println("What can I do for you?");
 
-        final int MAX_TASKS = 100;
         Task[] tasks = new Task[MAX_TASKS];
-        int taskCount = 0;
+        int[] taskCount = {0};
 
         while (true) {
             String line = scanner.nextLine();
+            boolean shouldExit = false;
             System.out.println(SEP);
-            String cmd = line.trim();
-            if (cmd.equalsIgnoreCase("bye")) {
-                System.out.println(" Bye. Hope to see you again soon!");
-                System.out.println(SEP);
+
+            try {
+                shouldExit = processCommand(line, tasks, taskCount);
+            } catch (RalphException e) {
+                System.out.println(" Oh no! " + e.getMessage());
+            }
+
+            System.out.println(SEP);
+            if (shouldExit) {
                 break;
-            } else if (cmd.equalsIgnoreCase("list")) {
-                if (taskCount == 0) {
-                    System.out.println(" No tasks.");
-                } else {
-                    System.out.println(" Here are the tasks in your list:");
-                    for (int i = 0; i < taskCount; i++) {
-                        System.out.println(" " + (i + 1) + "." + tasks[i]);
-                    }
-                }
-                System.out.println(SEP);
-            } else if (!cmd.isEmpty() && cmd.toLowerCase().startsWith("mark ")) {
-                String numStr = cmd.substring(5).trim();
-                try {
-                    int idx = Integer.parseInt(numStr) - 1;
-                    if (idx < 0 || idx >= taskCount) {
-                        System.out.println(" Invalid task number.");
-                    } else {
-                        tasks[idx].markAsDone();
-                        System.out.println(" Nice! I've marked this task as done:");
-                        System.out.println("   " + tasks[idx]);
-                    }
-                } catch (NumberFormatException e) {
-                    System.out.println(" Invalid task number.");
-                }
-                System.out.println(SEP);
-            } else if (!cmd.isEmpty() && cmd.toLowerCase().startsWith("unmark ")) {
-                String numStr = cmd.substring(7).trim();
-                try {
-                    int idx = Integer.parseInt(numStr) - 1;
-                    if (idx < 0 || idx >= taskCount) {
-                        System.out.println(" Invalid task number.");
-                    } else {
-                        tasks[idx].markAsNotDone();
-                        System.out.println(" OK, I've marked this task as not done yet:");
-                        System.out.println("   " + tasks[idx]);
-                    }
-                } catch (NumberFormatException e) {
-                    System.out.println(" Invalid task number.");
-                }
-                System.out.println(SEP);
-            } else if (!cmd.isEmpty() && cmd.toLowerCase().startsWith("todo ")) {
-                String desc = line.substring(5).trim();
-                if (desc.isEmpty()) {
-                    System.out.println(" The description of a todo cannot be empty.");
-                } else if (taskCount < MAX_TASKS) {
-                    tasks[taskCount++] = new Todo(desc);
-                    System.out.println(" Got it. I've added this task:");
-                    System.out.println("   " + tasks[taskCount - 1]);
-                    System.out.println(" Now you have " + taskCount + " tasks in the list.");
-                } else {
-                    System.out.println(" Task list is full (max " + MAX_TASKS + ").");
-                }
-                System.out.println(SEP);
-            } else if (!cmd.isEmpty() && cmd.toLowerCase().startsWith("deadline ")) {
-                String rest = line.substring(9).trim();
-                String[] parts = rest.split(" /by ", 2);
-                String desc = parts.length > 0 ? parts[0].trim() : "";
-                String by = parts.length > 1 ? parts[1].trim() : "";
-                if (desc.isEmpty()) {
-                    System.out.println(" The description of a deadline cannot be empty.");
-                } else if (taskCount < MAX_TASKS) {
-                    tasks[taskCount++] = new Deadline(desc, by);
-                    System.out.println(" Got it. I've added this task:");
-                    System.out.println("   " + tasks[taskCount - 1]);
-                    System.out.println(" Now you have " + taskCount + " tasks in the list.");
-                } else {
-                    System.out.println(" Task list is full (max " + MAX_TASKS + ").");
-                }
-                System.out.println(SEP);
-            } else if (!cmd.isEmpty() && cmd.toLowerCase().startsWith("event ")) {
-                String rest = line.substring(6).trim();
-                String[] parts = rest.split(" /from ", 2);
-                String desc = parts.length > 0 ? parts[0].trim() : "";
-                String from = "";
-                String to = "";
-                if (parts.length > 1) {
-                    String[] parts2 = parts[1].split(" /to ", 2);
-                    from = parts2[0].trim();
-                    to = parts2.length > 1 ? parts2[1].trim() : "";
-                }
-                if (desc.isEmpty()) {
-                    System.out.println(" The description of an event cannot be empty.");
-                } else if (taskCount < MAX_TASKS) {
-                    tasks[taskCount++] = new Event(desc, from, to);
-                    System.out.println(" Got it. I've added this task:");
-                    System.out.println("   " + tasks[taskCount - 1]);
-                    System.out.println(" Now you have " + taskCount + " tasks in the list.");
-                } else {
-                    System.out.println(" Task list is full (max " + MAX_TASKS + ").");
-                }
-                System.out.println(SEP);
-            } else if (!cmd.isEmpty()) {
-                if (taskCount < MAX_TASKS) {
-                    tasks[taskCount++] = new Todo(line);
-                    System.out.println(" Got it. I've added this task:");
-                    System.out.println("   " + tasks[taskCount - 1]);
-                    System.out.println(" Now you have " + taskCount + " tasks in the list.");
-                } else {
-                    System.out.println(" Task list is full (max " + MAX_TASKS + ").");
-                }
-                System.out.println(SEP);
-            } else {
-                System.out.println(SEP);
             }
         }
+
         scanner.close();
+    }
+
+    /**
+     * Handles one command line and throws RalphException for invalid input.
+     * @param line raw user input
+     * @param tasks the current task list
+     * @param taskCount current task count pointer
+     * @return true if the chatbot should exit; false otherwise
+     * @throws RalphException when the command or arguments are invalid
+     */
+    private static boolean processCommand(String line, Task[] tasks, int[] taskCount) throws RalphException {
+        String trimmed = line == null ? "" : line.trim();
+        if (trimmed.isEmpty()) {
+            throw new RalphException("You didn't say anything — try typing a command.");
+        }
+
+        String[] parts = trimmed.split("\\s+", 2);
+        String command = parts[0].toLowerCase();
+        String rest = parts.length > 1 ? parts[1].trim() : "";
+
+        switch (command) {
+        case "bye":
+            System.out.println(" Bye. Hope to see you again soon!");
+            return true;
+        case "list":
+            printTaskList(tasks, taskCount[0]);
+            return false;
+        case "mark":
+            int markIndex = parseTaskIndex(rest, "mark");
+            if (markIndex < 0 || markIndex >= taskCount[0]) {
+                        throw new RalphException("That task number doesn't exist.");
+            }
+            tasks[markIndex].markAsDone();
+            System.out.println(" Nice! I've marked this task as done:");
+            System.out.println("   " + tasks[markIndex]);
+            return false;
+        case "unmark":
+            int unmarkIndex = parseTaskIndex(rest, "unmark");
+            if (unmarkIndex < 0 || unmarkIndex >= taskCount[0]) {
+                        throw new RalphException("That task number doesn't exist.");
+            }
+            tasks[unmarkIndex].markAsNotDone();
+            System.out.println(" OK, I've marked this task as not done yet:");
+            System.out.println("   " + tasks[unmarkIndex]);
+            return false;
+        case "todo":
+            String todoDescription = getRequiredDescription(rest, "todo");
+            addTask(tasks, taskCount, new Todo(todoDescription));
+            return false;
+        case "deadline":
+            String deadlineInput = getRequiredDescription(rest, "deadline");
+            String[] deadlineParts = deadlineInput.split(" /by ", 2);
+            String deadlineDescription = deadlineParts[0].trim();
+            String deadlineBy = deadlineParts.length > 1 ? deadlineParts[1].trim() : "";
+            if (deadlineDescription.isEmpty()) {
+                            throw new RalphException("Give me what the deadline is for, please.");
+            }
+            if (deadlineBy.isEmpty()) {
+                            throw new RalphException("Please include '/by' with a date/time (e.g. 'deadline return book /by Sunday').");
+            }
+            addTask(tasks, taskCount, new Deadline(deadlineDescription, deadlineBy));
+            return false;
+        case "event":
+            String eventInput = getRequiredDescription(rest, "event");
+            String[] eventParts = eventInput.split(" /from ", 2);
+            String eventDescription = eventParts[0].trim();
+            if (eventDescription.isEmpty()) {
+                            throw new RalphException("Give me a short description for the event, please.");
+            }
+            if (eventParts.length < 2) {
+                            throw new RalphException("Events need '/from' and '/to' times (e.g. 'event meeting /from 2pm /to 3pm').");
+            }
+            String[] eventTimes = eventParts[1].split(" /to ", 2);
+            String from = eventTimes[0].trim();
+            String to = eventTimes.length > 1 ? eventTimes[1].trim() : "";
+            if (from.isEmpty() || to.isEmpty()) {
+                throw new RalphException("An event needs both a start and end time.");
+            }
+            addTask(tasks, taskCount, new Event(eventDescription, from, to));
+            return false;
+        default:
+                    throw new RalphException("I don't recognise that command. Try: list, todo, deadline, event, mark, unmark, bye.");
+        }
+    }
+
+    private static void printTaskList(Task[] tasks, int taskCount) {
+        if (taskCount == 0) {
+            System.out.println(" No tasks.");
+            return;
+        }
+
+        System.out.println(" Here are the tasks in your list:");
+        for (int i = 0; i < taskCount; i++) {
+            System.out.println(" " + (i + 1) + "." + tasks[i]);
+        }
+    }
+
+    private static int parseTaskIndex(String value, String command) throws RalphException {
+        if (value.isEmpty()) {
+                    throw new RalphException("Which task number? Say e.g. 'mark 2'.");
+        }
+        try {
+            return Integer.parseInt(value) - 1;
+        } catch (NumberFormatException e) {
+                    throw new RalphException("That's not a number — give me a task index like '2'.");
+        }
+    }
+
+    private static String getRequiredDescription(String value, String command) throws RalphException {
+        if (value == null || value.trim().isEmpty()) {
+            if ("todo".equals(command)) {
+                        throw new RalphException("Give me a description for your todo, please.");
+            }
+            if ("deadline".equals(command)) {
+                        throw new RalphException("Give me what the deadline is for.");
+            }
+            if ("event".equals(command)) {
+                        throw new RalphException("Give me a description for the event, please.");
+            }
+        }
+        return value.trim();
+    }
+
+    private static void addTask(Task[] tasks, int[] taskCount, Task task) throws RalphException {
+        if (taskCount[0] >= MAX_TASKS) {
+                    throw new RalphException("My list is full — can't add more than " + MAX_TASKS + " tasks.");
+        }
+        tasks[taskCount[0]++] = task;
+        System.out.println(" Got it. I've added this task:");
+        System.out.println("   " + task);
+        System.out.println(" Now you have " + taskCount[0] + " tasks in the list.");
     }
 }
