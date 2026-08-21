@@ -38,14 +38,39 @@ public class Ralph {
                 if (taskCount == 0) {
                     System.out.println(" No tasks.");
                 } else {
+                    System.out.println(" Here are the tasks in your list:");
                     for (int i = 0; i < taskCount; i++) {
-                        System.out.println(" " + (i + 1) + ". " + tasks[i]);
+                        System.out.println(" " + (i + 1) + "." + tasks[i]);
                     }
+                }
+                System.out.println(SEP);
+            } else if (!cmd.isEmpty() && cmd.toLowerCase().startsWith("mark ")) {
+                String numStr = cmd.substring(5).trim();
+                try {
+                    int idx = Integer.parseInt(numStr) - 1;
+                    if (idx < 0 || idx >= taskCount) {
+                        System.out.println(" Invalid task number.");
+                    } else {
+                        String t = tasks[idx];
+                        String desc = t;
+                        if (t.startsWith("[") && t.length() > 3 && t.charAt(2) == ']') {
+                            if (t.length() > 4) {
+                                desc = t.substring(4);
+                            } else {
+                                desc = "";
+                            }
+                        }
+                        tasks[idx] = "[X] " + desc;
+                        System.out.println(" Nice! I've marked this task as done:");
+                        System.out.println("   " + tasks[idx]);
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println(" Invalid task number.");
                 }
                 System.out.println(SEP);
             } else if (!cmd.isEmpty()) {
                 if (taskCount < MAX_TASKS) {
-                    tasks[taskCount++] = line;
+                    tasks[taskCount++] = "[ ] " + line;
                     System.out.println(" added: " + line);
                 } else {
                     System.out.println(" Task list is full (max " + MAX_TASKS + ").");
