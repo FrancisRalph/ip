@@ -23,7 +23,7 @@ public class Ralph {
         System.out.println("What can I do for you?");
 
         final int MAX_TASKS = 100;
-        String[] tasks = new String[MAX_TASKS];
+        Task[] tasks = new Task[MAX_TASKS];
         int taskCount = 0;
 
         while (true) {
@@ -51,16 +51,7 @@ public class Ralph {
                     if (idx < 0 || idx >= taskCount) {
                         System.out.println(" Invalid task number.");
                     } else {
-                        String t = tasks[idx];
-                        String desc = t;
-                        if (t.startsWith("[") && t.length() > 3 && t.charAt(2) == ']') {
-                            if (t.length() > 4) {
-                                desc = t.substring(4);
-                            } else {
-                                desc = "";
-                            }
-                        }
-                        tasks[idx] = "[X] " + desc;
+                        tasks[idx].markAsDone();
                         System.out.println(" Nice! I've marked this task as done:");
                         System.out.println("   " + tasks[idx]);
                     }
@@ -75,16 +66,7 @@ public class Ralph {
                     if (idx < 0 || idx >= taskCount) {
                         System.out.println(" Invalid task number.");
                     } else {
-                        String t = tasks[idx];
-                        String desc = t;
-                        if (t.startsWith("[") && t.length() > 3 && t.charAt(2) == ']') {
-                            if (t.length() > 4) {
-                                desc = t.substring(4);
-                            } else {
-                                desc = "";
-                            }
-                        }
-                        tasks[idx] = "[ ] " + desc;
+                        tasks[idx].markAsNotDone();
                         System.out.println(" OK, I've marked this task as not done yet:");
                         System.out.println("   " + tasks[idx]);
                     }
@@ -94,7 +76,7 @@ public class Ralph {
                 System.out.println(SEP);
             } else if (!cmd.isEmpty()) {
                 if (taskCount < MAX_TASKS) {
-                    tasks[taskCount++] = "[ ] " + line;
+                    tasks[taskCount++] = new Task(line);
                     System.out.println(" added: " + line);
                 } else {
                     System.out.println(" Task list is full (max " + MAX_TASKS + ").");
