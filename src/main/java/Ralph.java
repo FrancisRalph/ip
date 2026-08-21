@@ -22,15 +22,36 @@ public class Ralph {
 
         System.out.println("What can I do for you?");
 
+        final int MAX_TASKS = 100;
+        String[] tasks = new String[MAX_TASKS];
+        int taskCount = 0;
+
         while (true) {
             String line = scanner.nextLine();
             System.out.println(SEP);
-            if (line.trim().equalsIgnoreCase("bye")) {
+            String cmd = line.trim();
+            if (cmd.equalsIgnoreCase("bye")) {
                 System.out.println(" Bye. Hope to see you again soon!");
                 System.out.println(SEP);
                 break;
+            } else if (cmd.equalsIgnoreCase("list")) {
+                if (taskCount == 0) {
+                    System.out.println(" No tasks.");
+                } else {
+                    for (int i = 0; i < taskCount; i++) {
+                        System.out.println(" " + (i + 1) + ". " + tasks[i]);
+                    }
+                }
+                System.out.println(SEP);
+            } else if (!cmd.isEmpty()) {
+                if (taskCount < MAX_TASKS) {
+                    tasks[taskCount++] = line;
+                    System.out.println(" added: " + line);
+                } else {
+                    System.out.println(" Task list is full (max " + MAX_TASKS + ").");
+                }
+                System.out.println(SEP);
             } else {
-                System.out.println(" " + line);
                 System.out.println(SEP);
             }
         }
