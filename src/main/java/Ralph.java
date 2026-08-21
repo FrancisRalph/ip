@@ -74,10 +74,63 @@ public class Ralph {
                     System.out.println(" Invalid task number.");
                 }
                 System.out.println(SEP);
+            } else if (!cmd.isEmpty() && cmd.toLowerCase().startsWith("todo ")) {
+                String desc = line.substring(5).trim();
+                if (desc.isEmpty()) {
+                    System.out.println(" The description of a todo cannot be empty.");
+                } else if (taskCount < MAX_TASKS) {
+                    tasks[taskCount++] = new Todo(desc);
+                    System.out.println(" Got it. I've added this task:");
+                    System.out.println("   " + tasks[taskCount - 1]);
+                    System.out.println(" Now you have " + taskCount + " tasks in the list.");
+                } else {
+                    System.out.println(" Task list is full (max " + MAX_TASKS + ").");
+                }
+                System.out.println(SEP);
+            } else if (!cmd.isEmpty() && cmd.toLowerCase().startsWith("deadline ")) {
+                String rest = line.substring(9).trim();
+                String[] parts = rest.split(" /by ", 2);
+                String desc = parts.length > 0 ? parts[0].trim() : "";
+                String by = parts.length > 1 ? parts[1].trim() : "";
+                if (desc.isEmpty()) {
+                    System.out.println(" The description of a deadline cannot be empty.");
+                } else if (taskCount < MAX_TASKS) {
+                    tasks[taskCount++] = new Deadline(desc, by);
+                    System.out.println(" Got it. I've added this task:");
+                    System.out.println("   " + tasks[taskCount - 1]);
+                    System.out.println(" Now you have " + taskCount + " tasks in the list.");
+                } else {
+                    System.out.println(" Task list is full (max " + MAX_TASKS + ").");
+                }
+                System.out.println(SEP);
+            } else if (!cmd.isEmpty() && cmd.toLowerCase().startsWith("event ")) {
+                String rest = line.substring(6).trim();
+                String[] parts = rest.split(" /from ", 2);
+                String desc = parts.length > 0 ? parts[0].trim() : "";
+                String from = "";
+                String to = "";
+                if (parts.length > 1) {
+                    String[] parts2 = parts[1].split(" /to ", 2);
+                    from = parts2[0].trim();
+                    to = parts2.length > 1 ? parts2[1].trim() : "";
+                }
+                if (desc.isEmpty()) {
+                    System.out.println(" The description of an event cannot be empty.");
+                } else if (taskCount < MAX_TASKS) {
+                    tasks[taskCount++] = new Event(desc, from, to);
+                    System.out.println(" Got it. I've added this task:");
+                    System.out.println("   " + tasks[taskCount - 1]);
+                    System.out.println(" Now you have " + taskCount + " tasks in the list.");
+                } else {
+                    System.out.println(" Task list is full (max " + MAX_TASKS + ").");
+                }
+                System.out.println(SEP);
             } else if (!cmd.isEmpty()) {
                 if (taskCount < MAX_TASKS) {
-                    tasks[taskCount++] = new Task(line);
-                    System.out.println(" added: " + line);
+                    tasks[taskCount++] = new Todo(line);
+                    System.out.println(" Got it. I've added this task:");
+                    System.out.println("   " + tasks[taskCount - 1]);
+                    System.out.println(" Now you have " + taskCount + " tasks in the list.");
                 } else {
                     System.out.println(" Task list is full (max " + MAX_TASKS + ").");
                 }
