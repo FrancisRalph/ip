@@ -68,6 +68,30 @@ public class Ralph {
                     System.out.println(" Invalid task number.");
                 }
                 System.out.println(SEP);
+            } else if (!cmd.isEmpty() && cmd.toLowerCase().startsWith("unmark ")) {
+                String numStr = cmd.substring(7).trim();
+                try {
+                    int idx = Integer.parseInt(numStr) - 1;
+                    if (idx < 0 || idx >= taskCount) {
+                        System.out.println(" Invalid task number.");
+                    } else {
+                        String t = tasks[idx];
+                        String desc = t;
+                        if (t.startsWith("[") && t.length() > 3 && t.charAt(2) == ']') {
+                            if (t.length() > 4) {
+                                desc = t.substring(4);
+                            } else {
+                                desc = "";
+                            }
+                        }
+                        tasks[idx] = "[ ] " + desc;
+                        System.out.println(" OK, I've marked this task as not done yet:");
+                        System.out.println("   " + tasks[idx]);
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println(" Invalid task number.");
+                }
+                System.out.println(SEP);
             } else if (!cmd.isEmpty()) {
                 if (taskCount < MAX_TASKS) {
                     tasks[taskCount++] = "[ ] " + line;
