@@ -1,13 +1,25 @@
 /**
  * Simple interactive CLI that manages tasks and validates user input.
- * Now uses Java Collections (ArrayList) and supports deleting tasks.
+ * Now persists tasks to disk under ./data/duke.txt and loads them on startup.
  */
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+
 public class Ralph {
     private static final String SEP = "____________________________________________________________";
     private static final int MAX_TASKS = 100;
 
+    // Relative data location from project root
+    private static final Path DATA_DIR = Paths.get("data");
+    private static final Path DATA_FILE = DATA_DIR.resolve("duke.txt");
+
     /**
-     * Entry point: prints a header, then reads commands until the user exits.
+     * Entry point: prints a header, loads saved tasks, then reads commands until the user exits.
      */
     public static void main(String[] args) {
         String banner = """
@@ -24,6 +36,13 @@ public class Ralph {
         System.out.println("What can I do for you?");
 
         java.util.List<Task> tasks = new java.util.ArrayList<>();
+
+        // Load any saved tasks (file may not exist the first time)
+        try {
+            loadTasks(tasks);
+        } catch (IOException e) {
+            System.out.println(" Warning: could not load saved tasks: " + e.getMessage());
+        }
 
         while (true) {
             String line = scanner.nextLine();
@@ -77,6 +96,8 @@ public class Ralph {
                     tasks.get(markIndex).markAsDone();
                     System.out.println(" Nice! I've marked this task as done:");
                     System.out.println("   " + tasks.get(markIndex));
+                    // persist change
+                    saveTasks(tasks);
                     return false;
         case "unmark":
                     int unmarkIndex = parseTaskIndex(rest, "unmark");
@@ -86,6 +107,8 @@ public class Ralph {
                     tasks.get(unmarkIndex).markAsNotDone();
                     System.out.println(" OK, I've marked this task as not done yet:");
                     System.out.println("   " + tasks.get(unmarkIndex));
+                    // persist change
+                    saveTasks(tasks);
                     return false;
         case "delete":
                     int delIndex = parseTaskIndex(rest, "delete");
@@ -96,6 +119,8 @@ public class Ralph {
                     System.out.println(" Noted. I've removed this task:");
                     System.out.println("   " + removed);
                     System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
+                    // persist change
+                    saveTasks(tasks);
                     return false;
         case "todo":
                     String todoDescription = getRequiredDescription(rest, "todo");
@@ -183,5 +208,92 @@ public class Ralph {
         System.out.println(" Got it. I've added this task:");
         System.out.println("   " + task);
         System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
+        // persist change
+        saveTasks(tasks);
+    }
+
+    /**
+     * Load saved tasks from ./data/duke.txt if present. The file format is pipe-separated:
+     * T | 1 | description
+     * D | 0 | description | by
+     * E | 0 | description | from | to
+     */
+    private static void loadTasks(List<Task> tasks) throws IOException {
+        if (!Files.exists(DATA_FILE)) {
+            return; // nothing to load yet
+        }
+        List<String> lines = Files.readAllLines(DATA_FILE);
+        for (String line : lines) {
+            if (line == null || line.trim().isEmpty()) continue;
+            String[] parts = line.split("\\s*\\|\\s*", -1);
+            String type = parts.length > 0 ? parts[0] : "";
+            boolean done = parts.length > 1 && "1".equals(parts[1]);
+            try {
+                switch (type) {
+                    case "T": {
+                        String desc = parts.length > 2 ? parts[2] : "";
+                        Todo t = new Todo(desc);
+                        if (done) t.markAsDone();
+                        tasks.add(t);
+                        break;
+                    }
+                    case "D": {
+                        String desc = parts.length > 2 ? parts[2] : "";
+                        String by = parts.length > 3 ? parts[3] : "";
+                        Deadline d = new Deadline(desc, by);
+                        if (done) d.markAsDone();
+                        tasks.add(d);
+                        break;
+                    }
+                    case "E": {
+                        String desc = parts.length > 2 ? parts[2] : "";
+                        String from = parts.length > 3 ? parts[3] : "";
+                        String to = parts.length > 4 ? parts[4] : "";
+                        Event e = new Event(desc, from, to);
+                        if (done) e.markAsDone();
+                        tasks.add(e);
+                        break;
+                    }
+                    default:
+                        // ignore unknown lines
+                        break;
+                }
+            } catch (Exception ex) {
+                // Skip malformed lines but continue loading the rest
+                System.out.println(" Warning: skipping malformed saved task: " + line);
+            }
+        }
+    }
+
+    /**
+     * Save the current task list to disk, creating data directory/file if necessary.
+     */
+    private static void saveTasks(List<Task> tasks) {
+        try {
+            if (!Files.exists(DATA_DIR)) {
+                Files.createDirectories(DATA_DIR);
+            }
+            try (BufferedWriter writer = Files.newBufferedWriter(DATA_FILE)) {
+                for (Task t : tasks) {
+                    String line = null;
+                    String doneFlag = (t.isDone ? "1" : "0");
+                    if (t instanceof Todo) {
+                        line = "T | " + doneFlag + " | " + t.description;
+                    } else if (t instanceof Deadline) {
+                        Deadline d = (Deadline) t;
+                        line = "D | " + doneFlag + " | " + d.description + " | " + d.by;
+                    } else if (t instanceof Event) {
+                        Event e = (Event) t;
+                        line = "E | " + doneFlag + " | " + e.description + " | " + e.from + " | " + e.to;
+                    }
+                    if (line != null) {
+                        writer.write(line);
+                        writer.newLine();
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println(" Error saving tasks: " + e.getMessage());
+        }
     }
 }
