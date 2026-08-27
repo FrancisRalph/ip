@@ -1,11 +1,16 @@
 /**
- * An Event task: has a from and to string holding time range.
+ * An Event task: stores start and end as java.time.LocalDateTime.
  */
-public class Event extends Task {
-    protected String from;
-    protected String to;
 
-    public Event(String description, String from, String to) {
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalTime;
+
+public class Event extends Task {
+    protected LocalDateTime from;
+    protected LocalDateTime to;
+
+    public Event(String description, LocalDateTime from, LocalDateTime to) {
         super(description);
         this.from = from;
         this.to = to;
@@ -13,6 +18,14 @@ public class Event extends Task {
 
     @Override
     public String toString() {
-        return "[E]" + super.toString() + " (from: " + from + " to: " + to + ")";
+        DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("MMM dd yyyy");
+        DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("HH:mm");
+        String fromStr = from.toLocalTime().equals(LocalTime.MIDNIGHT)
+                ? dateFmt.format(from.toLocalDate())
+                : dateFmt.format(from.toLocalDate()) + " " + timeFmt.format(from.toLocalTime());
+        String toStr = to.toLocalTime().equals(LocalTime.MIDNIGHT)
+                ? dateFmt.format(to.toLocalDate())
+                : dateFmt.format(to.toLocalDate()) + " " + timeFmt.format(to.toLocalTime());
+        return "[E]" + super.toString() + " (from: " + fromStr + " to: " + toStr + ")";
     }
 }

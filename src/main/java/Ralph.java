@@ -9,6 +9,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class Ralph {
     private static final String SEP = "____________________________________________________________";
@@ -17,6 +22,10 @@ public class Ralph {
     // Relative data location from project root
     private static final Path DATA_DIR = Paths.get("data");
     private static final Path DATA_FILE = DATA_DIR.resolve("duke.txt");
+
+    // Formatters for printing
+    private static final DateTimeFormatter PRINT_DATE = DateTimeFormatter.ofPattern("MMM dd yyyy");
+    private static final DateTimeFormatter PRINT_TIME = DateTimeFormatter.ofPattern("HH:mm");
 
     /**
      * Entry point: prints a header, loads saved tasks, then reads commands until the user exits.
@@ -135,9 +144,11 @@ public class Ralph {
                         throw new RalphException("Give me what the deadline is for, please.");
                     }
                     if (deadlineBy.isEmpty()) {
-                        throw new RalphException("Please include '/by' with a date/time (e.g. 'deadline return book /by Sunday').");
+                        throw new RalphException("Please include '/by' with a date/time in yyyy-MM-dd or yyyy-MM-dd HH:mm format.");
             }
-                    addTask(tasks, new Deadline(deadlineDescription, deadlineBy));
+                    // parse date/time and create Deadline
+                    LocalDateTime byDt = parseDateTime(deadlineBy);
+                    addTask(tasks, new Deadline(deadlineDescription, byDt));
                     return false;
         case "event":
                     String eventInput = getRequiredDescription(rest, "event");
@@ -147,7 +158,7 @@ public class Ralph {
                         throw new RalphException("Give me a short description for the event, please.");
             }
                     if (eventParts.length < 2) {
-                        throw new RalphException("Events need '/from' and '/to' times (e.g. 'event meeting /from 2pm /to 3pm').");
+                        throw new RalphException("Events need '/from' and '/to' times (e.g. 'event meeting /from 2019-10-10 /to 2019-10-11').");
                     }
                     String[] eventTimes = eventParts[1].split(" /to ", 2);
                     String from = eventTimes[0].trim();
@@ -155,7 +166,9 @@ public class Ralph {
                     if (from.isEmpty() || to.isEmpty()) {
                         throw new RalphException("An event needs both a start and end time.");
                     }
-                    addTask(tasks, new Event(eventDescription, from, to));
+                    LocalDateTime fromDt = parseDateTime(from);
+                    LocalDateTime toDt = parseDateTime(to);
+                    addTask(tasks, new Event(eventDescription, fromDt, toDt));
                     return false;
         default:
                     throw new RalphException("I don't recognise that command. Try: list, todo, deadline, event, mark, unmark, delete, bye.");
@@ -213,6 +226,53 @@ public class Ralph {
     }
 
     /**
+     * Parse a user-provided date/time string into LocalDateTime.
+     * Accepts ISO date (yyyy-MM-dd), ISO datetime (with 'T' or a space), or yyyy-MM-dd HHmm / HH:mm.
+     */
+    private static LocalDateTime parseDateTime(String input) throws RalphException {
+        LocalDateTime dt = tryParseDateTime(input);
+        if (dt == null) {
+            throw new RalphException("Could not parse date/time. Use yyyy-MM-dd or yyyy-MM-dd HH:mm (e.g. 2019-10-15 or 2019-10-15 18:00)");
+        }
+        return dt;
+    }
+
+    /**
+     * Try parsing in several common formats. Returns null on failure.
+     */
+    private static LocalDateTime tryParseDateTime(String input) {
+        if (input == null) return null;
+        String s = input.trim();
+        if (s.isEmpty()) return null;
+        try {
+            // If already ISO-like with 'T'
+            if (s.contains("T")) return LocalDateTime.parse(s);
+            // If contains a space, try replacing with 'T' and parse
+            if (s.contains(" ")) {
+                String candidate = s.replace(' ', 'T');
+                try { return LocalDateTime.parse(candidate); } catch (DateTimeParseException ex) { }
+                // support date + HHmm (e.g. 2019-12-02 1800)
+                String[] parts = s.split(" ");
+                if (parts.length == 2) {
+                    String datePart = parts[0];
+                    String timePart = parts[1];
+                    if (timePart.matches("\\d{4}")) {
+                        String hhmm = timePart.substring(0,2) + ":" + timePart.substring(2);
+                        try { return LocalDateTime.parse(datePart + "T" + hhmm); } catch (DateTimeParseException ex) { }
+                    } else if (timePart.matches("\\d{2}:\\d{2}")) {
+                        try { return LocalDateTime.parse(datePart + "T" + timePart); } catch (DateTimeParseException ex) { }
+                    }
+                }
+            }
+            // Try parsing as date only
+            LocalDate d = LocalDate.parse(s);
+            return d.atStartOfDay();
+        } catch (DateTimeParseException e) {
+            return null;
+        }
+    }
+
+    /**
      * Load saved tasks from ./data/duke.txt if present. The file format is pipe-separated:
      * T | 1 | description
      * D | 0 | description | by
@@ -239,17 +299,22 @@ public class Ralph {
                     }
                     case "D": {
                         String desc = parts.length > 2 ? parts[2] : "";
-                        String by = parts.length > 3 ? parts[3] : "";
-                        Deadline d = new Deadline(desc, by);
+                        String byStr = parts.length > 3 ? parts[3] : "";
+                        LocalDateTime byDt = tryParseDateTime(byStr);
+                        if (byDt == null) throw new IllegalArgumentException("Invalid date/time");
+                        Deadline d = new Deadline(desc, byDt);
                         if (done) d.markAsDone();
                         tasks.add(d);
                         break;
                     }
                     case "E": {
                         String desc = parts.length > 2 ? parts[2] : "";
-                        String from = parts.length > 3 ? parts[3] : "";
-                        String to = parts.length > 4 ? parts[4] : "";
-                        Event e = new Event(desc, from, to);
+                        String fromStr = parts.length > 3 ? parts[3] : "";
+                        String toStr = parts.length > 4 ? parts[4] : "";
+                        LocalDateTime fromDt = tryParseDateTime(fromStr);
+                        LocalDateTime toDt = tryParseDateTime(toStr);
+                        if (fromDt == null || toDt == null) throw new IllegalArgumentException("Invalid date/time");
+                        Event e = new Event(desc, fromDt, toDt);
                         if (done) e.markAsDone();
                         tasks.add(e);
                         break;
