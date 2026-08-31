@@ -1,3 +1,5 @@
+package ralph.exception;
+
 /**
  * Represents an error specific to Ralph's command parsing and validation.
  */

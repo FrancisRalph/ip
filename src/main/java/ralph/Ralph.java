@@ -1,6 +1,14 @@
+package ralph;
+
 import java.io.IOException;
-import java.util.List;
 import java.util.Scanner;
+
+import ralph.command.Command;
+import ralph.command.CommandHandler;
+import ralph.exception.RalphException;
+import ralph.model.TaskList;
+import ralph.storage.Storage;
+import ralph.ui.Ui;
 
 /**
  * Main entrypoint that wires Ui, Storage, Parser and TaskList together.
@@ -14,7 +22,7 @@ public class Ralph {
     public Ralph(String filePath) {
         this.ui = new Ui();
         this.storage = new Storage(filePath);
-        this.commandHandler = new CommandHandler(new Parser());
+        this.commandHandler = new CommandHandler(new ralph.parser.Parser());
         TaskList loaded;
         try {
             loaded = new TaskList(storage.load());
@@ -37,7 +45,9 @@ public class Ralph {
                 Command command = commandHandler.parse(line);
                 boolean shouldExit = command.execute(tasks, ui, storage);
                 ui.printSeparator();
-                if (shouldExit) break;
+                if (shouldExit) {
+                    break;
+                }
             } catch (RalphException e) {
                 ui.showError(e.getMessage());
                 ui.printSeparator();

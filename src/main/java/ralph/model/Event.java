@@ -1,11 +1,12 @@
+package ralph.model;
+
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+
 /**
  * An Event task: stores start and end as java.time.LocalDateTime.
  */
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.LocalTime;
-
 public class Event extends Task {
     protected LocalDateTime from;
     protected LocalDateTime to;
@@ -14,6 +15,14 @@ public class Event extends Task {
         super(description);
         this.from = from;
         this.to = to;
+    }
+
+    public LocalDateTime getFrom() {
+        return from;
+    }
+
+    public LocalDateTime getTo() {
+        return to;
     }
 
     @Override

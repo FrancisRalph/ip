@@ -1,13 +1,18 @@
+package ralph.parser;
+
 import java.time.LocalDateTime;
 
+import ralph.exception.RalphException;
+import ralph.storage.Storage;
+
 /**
- * Lightweight parser utilities: split raw input into command and argument,
- * and provide validation helpers.
+ * Parses raw user input and returns the corresponding command object.
  */
 public class Parser {
     public static class Parsed {
         public final String command;
         public final String args;
+
         public Parsed(String command, String args) {
             this.command = command;
             this.args = args;
@@ -16,7 +21,9 @@ public class Parser {
 
     public Parsed parseCommand(String line) throws RalphException {
         String trimmed = line == null ? "" : line.trim();
-        if (trimmed.isEmpty()) throw new RalphException("You didn't say anything — try typing a command.");
+        if (trimmed.isEmpty()) {
+            throw new RalphException("You didn't say anything — try typing a command.");
+        }
         String[] parts = trimmed.split("\\s+", 2);
         String command = parts[0].toLowerCase();
         String rest = parts.length > 1 ? parts[1].trim() : "";

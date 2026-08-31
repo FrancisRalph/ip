@@ -1,3 +1,5 @@
+package ralph.model;
+
 /**
  * A ToDo task: no date/time attached.
  */

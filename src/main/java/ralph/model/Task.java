@@ -1,3 +1,5 @@
+package ralph.model;
+
 /**
  * Represents a simple task with a description and done status.
  */
@@ -22,6 +24,14 @@ public class Task {
      */
     public String getStatusIcon() {
         return (isDone ? "X" : " ");
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public boolean isDone() {
+        return isDone;
     }
 
     /** Marks the task as done. */

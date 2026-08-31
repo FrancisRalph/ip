@@ -1,4 +1,14 @@
+package ralph.command;
+
 import java.io.IOException;
+
+import ralph.exception.RalphException;
+import ralph.model.Task;
+import ralph.model.TaskList;
+import ralph.model.Todo;
+import ralph.parser.Parser;
+import ralph.storage.Storage;
+import ralph.ui.Ui;
 
 /**
  * Represents one user action as a command object.
@@ -129,7 +139,7 @@ public interface Command {
             if (by.isEmpty()) {
                 throw new RalphException("Please include '/by' with a date/time in yyyy-MM-dd or yyyy-MM-dd HH:mm format.");
             }
-            Deadline deadline = new Deadline(description, Parser.parseDateTime(by));
+            ralph.model.Deadline deadline = new ralph.model.Deadline(description, Parser.parseDateTime(by));
             tasks.add(deadline);
             ui.showAdded(deadline, tasks.size());
             persist(tasks, storage);
@@ -159,7 +169,7 @@ public interface Command {
             if (from.isEmpty() || to.isEmpty()) {
                 throw new RalphException("An event needs both a start and end time.");
             }
-            Event event = new Event(description, Parser.parseDateTime(from), Parser.parseDateTime(to));
+            ralph.model.Event event = new ralph.model.Event(description, Parser.parseDateTime(from), Parser.parseDateTime(to));
             tasks.add(event);
             ui.showAdded(event, tasks.size());
             persist(tasks, storage);

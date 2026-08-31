@@ -1,4 +1,8 @@
+package ralph.ui;
+
 import java.util.List;
+
+import ralph.model.Task;
 
 /**
  * Handles user interaction: printing messages and simple prompts.
