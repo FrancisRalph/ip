@@ -1,0 +1,28 @@
+package ralph.model;
+
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDateTime;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class EventTest {
+
+    @Test
+    void toString_bothMidnight_datesOnly() {
+        Event e = new Event("holiday", LocalDateTime.of(2023, 12, 25, 0, 0), LocalDateTime.of(2023, 12, 26, 0, 0));
+        assertEquals("[E][ ] holiday (from: Dec 25 2023 to: Dec 26 2023)", e.toString());
+    }
+
+    @Test
+    void toString_fromMidnight_toWithTime_timeShown() {
+        Event e = new Event("conference", LocalDateTime.of(2023, 9, 1, 0, 0), LocalDateTime.of(2023, 9, 1, 18, 30));
+        assertEquals("[E][ ] conference (from: Sept 01 2023 to: Sept 01 2023 18:30)", e.toString());
+    }
+
+    @Test
+    void toString_bothWithTimes_timeShown() {
+        Event e = new Event("meeting", LocalDateTime.of(2023, 9, 2, 9, 0), LocalDateTime.of(2023, 9, 2, 10, 15));
+        assertEquals("[E][ ] meeting (from: Sept 02 2023 09:00 to: Sept 02 2023 10:15)", e.toString());
+    }
+}
