@@ -38,7 +38,7 @@ public class Ralph {
         Scanner scanner = new Scanner(System.in);
         ui.printPrompt();
 
-        while (true) {
+        while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
             ui.printSeparator();
             try {
