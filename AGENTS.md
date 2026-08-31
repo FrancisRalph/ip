@@ -62,3 +62,11 @@ To keep code quality consistent and make automated review easier, follow these c
   - Tests must pass locally before committing; do not commit failing tests.
 
 These conventions help maintain readability, consistency, and reliability of tests across student projects and make AI-assisted contributions easier to review.
+
+# Mandatory project standards
+
+Follow the project-specific skills below for all work in this repository:
+
+- Follow `.github/skills/seedu-java-coding-standard/SKILL.md` for all Java code and all code changes in this project.
+- Follow `.github/skills/seedu-git-standard/SKILL.md` for all future commits and Git operations.
+- For any Git commit message, ensure the subject line is in imperative mood, capitalized, and free of a trailing period, and include a rationale-rich body for non-trivial changes.
