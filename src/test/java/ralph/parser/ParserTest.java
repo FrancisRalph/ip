@@ -52,12 +52,16 @@ class ParserTest {
         assertThrows(RalphException.class, () -> Parser.getRequiredDescription("", "todo"));
         assertThrows(RalphException.class, () -> Parser.getRequiredDescription("   ", "deadline"));
         assertThrows(RalphException.class, () -> Parser.getRequiredDescription(null, "event"));
+        assertThrows(RalphException.class, () -> Parser.getRequiredDescription("", "find"));
     }
 
     @Test
     void getRequiredDescription_present_returnsTrimmed() throws RalphException {
         String res = Parser.getRequiredDescription("  do homework  ", "todo");
         assertEquals("do homework", res);
+
+        String findRes = Parser.getRequiredDescription("  book  ", "find");
+        assertEquals("book", findRes);
     }
 
     @Test

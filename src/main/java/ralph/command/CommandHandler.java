@@ -30,6 +30,10 @@ public class CommandHandler {
             return new Command.ByeCommand();
         case "list":
             return new Command.ListCommand();
+        case "find": {
+            String keyword = Parser.getRequiredDescription(rest, "find");
+            return new Command.FindCommand(keyword);
+        }
         case "mark":
             return new Command.MarkCommand(Parser.parseTaskIndex(rest, "mark"));
         case "unmark":
@@ -64,7 +68,7 @@ public class CommandHandler {
         }
         default:
             throw new RalphException(
-                    "I don't recognise that command. Try: list, todo, deadline, event, "
+                    "I don't recognise that command. Try: list, find, todo, deadline, event, "
                             + "mark, unmark, delete, bye."
             );
         }

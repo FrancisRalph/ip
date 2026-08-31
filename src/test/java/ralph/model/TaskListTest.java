@@ -37,4 +37,18 @@ class TaskListTest {
         assertEquals(1, tl.size());
         assertEquals(t2, tl.get(0));
     }
+
+    @Test
+    void find_caseInsensitiveKeyword_returnsMatchingTasksInOrder() {
+        TaskList tl = new TaskList();
+        tl.add(new Todo("read book"));
+        tl.add(new Todo("return book"));
+        tl.add(new Todo("go home"));
+
+        List<Task> matches = tl.find("BOOK");
+
+        assertEquals(2, matches.size());
+        assertEquals("read book", matches.get(0).getDescription());
+        assertEquals("return book", matches.get(1).getDescription());
+    }
 }

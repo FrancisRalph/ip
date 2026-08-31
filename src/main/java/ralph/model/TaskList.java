@@ -72,4 +72,24 @@ public class TaskList {
     public List<Task> getAll() {
         return Collections.unmodifiableList(tasks);
     }
+
+    /**
+     * Finds tasks whose descriptions contain the given keyword, ignoring case.
+     *
+     * @param keyword the keyword to search for
+     * @return matching tasks in list order
+     */
+    public List<Task> find(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+        String key = keyword.trim().toLowerCase();
+        List<Task> matches = new ArrayList<>();
+        for (Task task : tasks) {
+            if (task.getDescription().toLowerCase().contains(key)) {
+                matches.add(task);
+            }
+        }
+        return matches;
+    }
 }

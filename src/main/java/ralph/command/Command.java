@@ -57,6 +57,20 @@ public interface Command {
         }
     }
 
+    final class FindCommand implements Command {
+        private final String keyword;
+
+        public FindCommand(String keyword) {
+            this.keyword = keyword;
+        }
+
+        @Override
+        public boolean execute(TaskList tasks, Ui ui, Storage storage) {
+            ui.showMatchingTasks(tasks.find(keyword));
+            return false;
+        }
+    }
+
     final class MarkCommand implements Command {
         private final int index;
 

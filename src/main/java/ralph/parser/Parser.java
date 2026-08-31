@@ -84,6 +84,9 @@ public class Parser {
             if ("event".equals(command)) {
                 throw new RalphException("Give me a description for the event, please.");
             }
+            if ("find".equals(command)) {
+                throw new RalphException("Please tell me what to search for.");
+            }
         }
         return value.trim();
     }

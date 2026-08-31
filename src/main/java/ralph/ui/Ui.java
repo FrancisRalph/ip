@@ -79,6 +79,22 @@ public class Ui {
     }
 
     /**
+     * Prints a filtered list of tasks that match a search keyword.
+     *
+     * @param tasks the matching tasks to display
+     */
+    public void showMatchingTasks(List<Task> tasks) {
+        if (tasks.isEmpty()) {
+            System.out.println(" No matching tasks found.");
+            return;
+        }
+        System.out.println(" Here are the matching tasks in your list:");
+        for (int i = 0; i < tasks.size(); i++) {
+            System.out.println(" " + (i + 1) + "." + tasks.get(i));
+        }
+    }
+
+    /**
      * Notifies the user that a task was added and shows the current total.
      *
      * @param task the task that was added
