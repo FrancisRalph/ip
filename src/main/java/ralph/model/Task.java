@@ -10,8 +10,9 @@ public class Task {
     protected boolean isDone;
 
     /**
-     * Create a new Task with the given description, initially not done.
-     * @param description task description
+     * Constructs a Task with the given description; initially not done.
+     *
+     * @param description the task description
      */
     public Task(String description) {
         this.description = description;
@@ -19,27 +20,42 @@ public class Task {
     }
 
     /**
-     * Returns the status icon used when printing the task.
-     * @return "X" if done, otherwise a space character
+     * Returns the textual status icon for the task when printed.
+     *
+     * @return "X" when done; a single space when not done
      */
     public String getStatusIcon() {
         return (isDone ? "X" : " ");
     }
 
+    /**
+     * Returns the task description.
+     *
+     * @return the description text
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Returns whether the task is marked as done.
+     *
+     * @return true if done, false otherwise
+     */
     public boolean isDone() {
         return isDone;
     }
 
-    /** Marks the task as done. */
+    /**
+     * Marks the task as done.
+     */
     public void markAsDone() {
         this.isDone = true;
     }
 
-    /** Marks the task as not done. */
+    /**
+     * Marks the task as not done.
+     */
     public void markAsNotDone() {
         this.isDone = false;
     }

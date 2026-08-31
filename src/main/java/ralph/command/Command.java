@@ -16,8 +16,23 @@ import ralph.ui.Ui;
 public interface Command {
     int MAX_TASKS = 100;
 
+    /**
+     * Executes the command performing any modifications and interacting with UI/storage as needed.
+     *
+     * @param tasks the current task list
+     * @param ui the UI helper used to show messages
+     * @param storage storage to persist changes when necessary
+     * @return true when the application should exit after this command, false otherwise
+     * @throws RalphException on validation or execution errors
+     */
     boolean execute(TaskList tasks, Ui ui, Storage storage) throws RalphException;
 
+    /**
+     * Helper to persist the current task list to storage, swallowing IO errors with a message.
+     *
+     * @param tasks the task list to persist
+     * @param storage the storage implementation used to save
+     */
     static void persist(TaskList tasks, Storage storage) {
         try {
             storage.save(tasks.getAll());

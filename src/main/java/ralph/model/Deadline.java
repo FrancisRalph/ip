@@ -10,15 +10,31 @@ import java.time.format.DateTimeFormatter;
 public class Deadline extends Task {
     protected LocalDateTime by;
 
+    /**
+     * Constructs a Deadline task with the specified due date/time.
+     *
+     * @param description description of the task
+     * @param by due date/time
+     */
     public Deadline(String description, LocalDateTime by) {
         super(description);
         this.by = by;
     }
 
+    /**
+     * Returns the due date/time for this deadline.
+     *
+     * @return due LocalDateTime
+     */
     public LocalDateTime getBy() {
         return by;
     }
 
+    /**
+     * Returns a user-friendly string representation of the deadline, with formatted date/time.
+     *
+     * @return formatted string for display
+     */
     @Override
     public String toString() {
         DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("MMM dd yyyy");

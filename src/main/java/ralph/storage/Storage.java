@@ -23,12 +23,23 @@ public class Storage {
     private final Path dataDir;
     private final Path dataFile;
 
+    /**
+     * Constructs a Storage instance configured to read/write the provided file path.
+     *
+     * @param filePath path to the data file (may include a directory)
+     */
     public Storage(String filePath) {
         Path p = Paths.get(filePath);
         this.dataDir = p.getParent() == null ? Paths.get(".") : p.getParent();
         this.dataFile = p;
     }
 
+    /**
+     * Loads saved tasks from the configured data file.
+     *
+     * @return a list of tasks loaded from disk; empty if the file does not exist
+     * @throws IOException if reading the file fails unexpectedly
+     */
     public List<Task> load() throws IOException {
         List<Task> tasks = new ArrayList<>();
         if (!Files.exists(dataFile)) {
@@ -93,6 +104,12 @@ public class Storage {
         return tasks;
     }
 
+    /**
+     * Saves the provided tasks to the configured data file, creating directories as needed.
+     *
+     * @param tasks the tasks to persist
+     * @throws IOException if writing to disk fails
+     */
     public void save(List<Task> tasks) throws IOException {
         if (!Files.exists(dataDir)) {
             Files.createDirectories(dataDir);
@@ -169,6 +186,12 @@ public class Storage {
 
     /**
      * Exposed helper so other classes (Parser) can reuse the same parsing behaviour.
+     */
+    /**
+     * Public wrapper around the internal parsing routine so other classes can reuse the behaviour.
+     *
+     * @param input the user-provided date/time string
+     * @return parsed LocalDateTime or null when parsing fails
      */
     public static LocalDateTime tryParseDateTimeForReuse(String input) {
         return tryParseDateTime(input);

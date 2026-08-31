@@ -13,6 +13,13 @@ public class CommandHandler {
         this.parser = parser;
     }
 
+    /**
+     * Parses a raw input line into the corresponding Command object.
+     *
+     * @param line raw user input
+     * @return Command instance representing the requested action
+     * @throws RalphException on invalid or malformed input
+     */
     public Command parse(String line) throws RalphException {
         Parser.Parsed parsed = parser.parseCommand(line);
         String command = parsed.command;

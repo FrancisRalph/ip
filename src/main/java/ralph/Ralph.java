@@ -19,6 +19,11 @@ public class Ralph {
     private final CommandHandler commandHandler;
     private final TaskList tasks;
 
+    /**
+     * Constructs the main application wiring together UI, storage and the command handler.
+     *
+     * @param filePath file path used for data persistence
+     */
     public Ralph(String filePath) {
         this.ui = new Ui();
         this.storage = new Storage(filePath);
@@ -33,6 +38,9 @@ public class Ralph {
         this.tasks = loaded;
     }
 
+    /**
+     * Runs the main read-eval-print loop reading from stdin until the user exits.
+     */
     public void run() {
         ui.printBanner();
         Scanner scanner = new Scanner(System.in);
@@ -56,6 +64,11 @@ public class Ralph {
         scanner.close();
     }
 
+    /**
+     * Application entry point.
+     *
+     * @param args command line arguments (ignored)
+     */
     public static void main(String[] args) {
         new Ralph("data/duke.txt").run();
     }
