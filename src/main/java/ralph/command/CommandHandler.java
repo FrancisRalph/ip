@@ -52,7 +52,10 @@ public class CommandHandler {
             String[] parts = input.split(" /from ", 2);
             String desc = parts[0].trim();
             if (parts.length < 2) {
-                throw new RalphException("Events need '/from' and '/to' times (e.g. 'event meeting /from 2019-10-10 /to 2019-10-11').");
+                throw new RalphException(
+                        "Events need '/from' and '/to' times "
+                                + "(e.g. 'event meeting /from 2019-10-10 /to 2019-10-11')."
+                );
             }
             String[] times = parts[1].split(" /to ", 2);
             String from = times[0].trim();
@@ -60,7 +63,10 @@ public class CommandHandler {
             return new Command.AddEventCommand(desc, from, to);
         }
         default:
-            throw new RalphException("I don't recognise that command. Try: list, todo, deadline, event, mark, unmark, delete, bye.");
+            throw new RalphException(
+                    "I don't recognise that command. Try: list, todo, deadline, event, "
+                            + "mark, unmark, delete, bye."
+            );
         }
     }
 }

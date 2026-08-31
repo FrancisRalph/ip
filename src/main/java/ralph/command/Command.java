@@ -152,9 +152,14 @@ public interface Command {
                 throw new RalphException("Give me what the deadline is for, please.");
             }
             if (by.isEmpty()) {
-                throw new RalphException("Please include '/by' with a date/time in yyyy-MM-dd or yyyy-MM-dd HH:mm format.");
+                throw new RalphException(
+                        "Please include '/by' with a date/time in yyyy-MM-dd or yyyy-MM-dd HH:mm format."
+                );
             }
-            ralph.model.Deadline deadline = new ralph.model.Deadline(description, Parser.parseDateTime(by));
+            ralph.model.Deadline deadline = new ralph.model.Deadline(
+                    description,
+                    Parser.parseDateTime(by)
+            );
             tasks.add(deadline);
             ui.showAdded(deadline, tasks.size());
             persist(tasks, storage);
@@ -184,7 +189,11 @@ public interface Command {
             if (from.isEmpty() || to.isEmpty()) {
                 throw new RalphException("An event needs both a start and end time.");
             }
-            ralph.model.Event event = new ralph.model.Event(description, Parser.parseDateTime(from), Parser.parseDateTime(to));
+            ralph.model.Event event = new ralph.model.Event(
+                    description,
+                    Parser.parseDateTime(from),
+                    Parser.parseDateTime(to)
+            );
             tasks.add(event);
             ui.showAdded(event, tasks.size());
             persist(tasks, storage);

@@ -98,7 +98,10 @@ public class Parser {
     public static LocalDateTime parseDateTime(String input) throws RalphException {
         LocalDateTime dt = tryParseDateTime(input);
         if (dt == null) {
-            throw new RalphException("Could not parse date/time. Use yyyy-MM-dd or yyyy-MM-dd HH:mm (e.g. 2019-10-15 or 2019-10-15 18:00)");
+            throw new RalphException(
+                    "Could not parse date/time. Use yyyy-MM-dd or yyyy-MM-dd HH:mm "
+                            + "(e.g. 2019-10-15 or 2019-10-15 18:00)"
+            );
         }
         return dt;
     }
