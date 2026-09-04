@@ -1,11 +1,14 @@
 package ralph;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
 
@@ -28,5 +31,16 @@ class RalphTest {
             System.setIn(originalIn);
             System.setOut(originalOut);
         }
+    }
+
+    @Test
+    void getResponse_todoCommand_returnsAddedTaskString() throws Exception {
+        Path tempFile = Files.createTempFile("ralph-gui-", ".txt");
+        Ralph app = new Ralph(tempFile.toString());
+
+        String response = app.getResponse("todo read book");
+
+        assertTrue(response.contains("Got it. I've added this task:"));
+        assertTrue(response.contains("read book"));
     }
 }
