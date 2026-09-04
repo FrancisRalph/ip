@@ -23,8 +23,8 @@ class ParserTest {
     void parseCommand_normalInput_parsedLowercaseAndArgs() throws RalphException {
         Parser p = new Parser();
         Parser.Parsed parsed = p.parseCommand("   ToDo   read book  ");
-        assertEquals("todo", parsed.command);
-        assertEquals("read book", parsed.args);
+        assertEquals("todo", parsed.command());
+        assertEquals("read book", parsed.args());
     }
 
     @Test

@@ -10,25 +10,6 @@ import ralph.storage.Storage;
  */
 public class Parser {
     /**
-     * Simple DTO representing a parsed user line: the command token and its remaining args.
-     */
-    public static class Parsed {
-        public final String command;
-        public final String args;
-
-        /**
-         * Creates a Parsed value.
-         *
-         * @param command the command token (lowercased)
-         * @param args the remaining arguments (may be empty)
-         */
-        public Parsed(String command, String args) {
-            this.command = command;
-            this.args = args;
-        }
-    }
-
-    /**
      * Parses a user's raw input line into a command token and argument string.
      *
      * @param line the raw user input
@@ -49,7 +30,7 @@ public class Parser {
     /**
      * Parses a 1-based task index used by commands such as mark/delete into a zero-based index.
      *
-     * @param value the string value to parse
+     * @param value   the string value to parse
      * @param command the command that requested the index (used for error messages)
      * @return zero-based task index
      * @throws RalphException when the supplied value is empty or not a number
@@ -68,13 +49,15 @@ public class Parser {
     /**
      * Ensures a command that requires a description has one and returns the trimmed value.
      *
-     * @param value the raw description portion of the input
+     * @param value   the raw description portion of the input
      * @param command the command name (used to tailor the error message)
      * @return the trimmed description
      * @throws RalphException when the description is missing or empty
      */
     public static String getRequiredDescription(String value, String command) throws RalphException {
-        if (value == null || value.trim().isEmpty()) {
+        if (value == null || value
+            .trim()
+            .isEmpty()) {
             if ("todo".equals(command)) {
                 throw new RalphException("Give me a description for your todo, please.");
             }
@@ -102,8 +85,8 @@ public class Parser {
         LocalDateTime dt = tryParseDateTime(input);
         if (dt == null) {
             throw new RalphException(
-                    "Could not parse date/time. Use yyyy-MM-dd or yyyy-MM-dd HH:mm "
-                            + "(e.g. 2019-10-15 or 2019-10-15 18:00)"
+                "Could not parse date/time. Use yyyy-MM-dd or yyyy-MM-dd HH:mm "
+                    + "(e.g. 2019-10-15 or 2019-10-15 18:00)"
             );
         }
         return dt;
@@ -111,5 +94,19 @@ public class Parser {
 
     private static LocalDateTime tryParseDateTime(String input) {
         return Storage.tryParseDateTimeForReuse(input);
+    }
+
+    /**
+     * Simple DTO representing a parsed user line: the command token and its remaining args.
+     */
+    public record Parsed(String command, String args) {
+        /**
+         * Creates a Parsed value.
+         *
+         * @param command the command token (lowercased)
+         * @param args    the remaining arguments (may be empty)
+         */
+        public Parsed {
+        }
     }
 }

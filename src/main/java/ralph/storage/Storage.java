@@ -47,7 +47,9 @@ public class Storage {
         }
         List<String> lines = Files.readAllLines(dataFile);
         for (String line : lines) {
-            if (line == null || line.trim().isEmpty()) {
+            if (line == null || line
+                .trim()
+                .isEmpty()) {
                 continue;
             }
             String[] parts = line.split("\\s*\\|\\s*", -1);
@@ -55,47 +57,47 @@ public class Storage {
             boolean done = parts.length > 1 && "1".equals(parts[1]);
             try {
                 switch (type) {
-                case "T": {
-                    String desc = parts.length > 2 ? parts[2] : "";
-                    Todo t = new Todo(desc);
-                    if (done) {
-                        t.markAsDone();
+                    case "T": {
+                        String desc = parts.length > 2 ? parts[2] : "";
+                        Todo t = new Todo(desc);
+                        if (done) {
+                            t.markAsDone();
+                        }
+                        tasks.add(t);
+                        break;
                     }
-                    tasks.add(t);
-                    break;
-                }
-                case "D": {
-                    String desc = parts.length > 2 ? parts[2] : "";
-                    String byStr = parts.length > 3 ? parts[3] : "";
-                    LocalDateTime byDt = tryParseDateTime(byStr);
-                    if (byDt == null) {
-                        throw new IllegalArgumentException("Invalid date/time");
+                    case "D": {
+                        String desc = parts.length > 2 ? parts[2] : "";
+                        String byStr = parts.length > 3 ? parts[3] : "";
+                        LocalDateTime byDt = tryParseDateTime(byStr);
+                        if (byDt == null) {
+                            throw new IllegalArgumentException("Invalid date/time");
+                        }
+                        Deadline d = new Deadline(desc, byDt);
+                        if (done) {
+                            d.markAsDone();
+                        }
+                        tasks.add(d);
+                        break;
                     }
-                    Deadline d = new Deadline(desc, byDt);
-                    if (done) {
-                        d.markAsDone();
+                    case "E": {
+                        String desc = parts.length > 2 ? parts[2] : "";
+                        String fromStr = parts.length > 3 ? parts[3] : "";
+                        String toStr = parts.length > 4 ? parts[4] : "";
+                        LocalDateTime fromDt = tryParseDateTime(fromStr);
+                        LocalDateTime toDt = tryParseDateTime(toStr);
+                        if (fromDt == null || toDt == null) {
+                            throw new IllegalArgumentException("Invalid date/time");
+                        }
+                        Event e = new Event(desc, fromDt, toDt);
+                        if (done) {
+                            e.markAsDone();
+                        }
+                        tasks.add(e);
+                        break;
                     }
-                    tasks.add(d);
-                    break;
-                }
-                case "E": {
-                    String desc = parts.length > 2 ? parts[2] : "";
-                    String fromStr = parts.length > 3 ? parts[3] : "";
-                    String toStr = parts.length > 4 ? parts[4] : "";
-                    LocalDateTime fromDt = tryParseDateTime(fromStr);
-                    LocalDateTime toDt = tryParseDateTime(toStr);
-                    if (fromDt == null || toDt == null) {
-                        throw new IllegalArgumentException("Invalid date/time");
-                    }
-                    Event e = new Event(desc, fromDt, toDt);
-                    if (done) {
-                        e.markAsDone();
-                    }
-                    tasks.add(e);
-                    break;
-                }
-                default:
-                    break;
+                    default:
+                        break;
                 }
             } catch (Exception ex) {
                 System.out.println(" Warning: skipping malformed saved task: " + line);
@@ -120,11 +122,9 @@ public class Storage {
                 String doneFlag = (t.isDone() ? "1" : "0");
                 if (t instanceof Todo) {
                     line = "T | " + doneFlag + " | " + t.getDescription();
-                } else if (t instanceof Deadline) {
-                    Deadline d = (Deadline) t;
+                } else if (t instanceof Deadline d) {
                     line = "D | " + doneFlag + " | " + d.getDescription() + " | " + d.getBy();
-                } else if (t instanceof Event) {
-                    Event e = (Event) t;
+                } else if (t instanceof Event e) {
                     line = "E | " + doneFlag + " | " + e.getDescription() + " | " + e.getFrom() + " | " + e.getTo();
                 }
                 if (line != null) {

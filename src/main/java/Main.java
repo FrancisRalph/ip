@@ -1,3 +1,5 @@
+import java.io.IOException;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -5,14 +7,12 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import ralph.Ralph;
 
-import java.io.IOException;
-
 /**
  * A GUI for Ralph using FXML.
  */
 public class Main extends Application {
 
-    private Ralph ralph = new Ralph("data/duke.txt");
+    private final Ralph ralph = new Ralph("data/duke.txt");
 
     @Override
     public void start(Stage stage) {
@@ -23,7 +23,9 @@ public class Main extends Application {
             stage.setScene(scene);
             stage.setMinHeight(220);
             stage.setMinWidth(417);
-            fxmlLoader.<MainWindow>getController().setRalph(ralph);  // inject the Ralph instance
+            fxmlLoader
+                .<MainWindow>getController()
+                .setRalph(ralph); // inject the Ralph instance
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();

@@ -48,7 +48,11 @@ class TaskListTest {
         List<Task> matches = tl.find("BOOK");
 
         assertEquals(2, matches.size());
-        assertEquals("read book", matches.get(0).getDescription());
-        assertEquals("return book", matches.get(1).getDescription());
+        assertEquals("read book", matches
+            .get(0)
+            .getDescription());
+        assertEquals("return book", matches
+            .get(1)
+            .getDescription());
     }
 }

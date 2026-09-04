@@ -14,7 +14,7 @@ public class Deadline extends Task {
      * Constructs a Deadline task with the specified due date/time.
      *
      * @param description description of the task
-     * @param by due date/time
+     * @param by          due date/time
      */
     public Deadline(String description, LocalDateTime by) {
         super(description);
@@ -40,7 +40,9 @@ public class Deadline extends Task {
         DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("MMM dd yyyy");
         DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("HH:mm");
         String when;
-        if (by.toLocalTime().equals(LocalTime.MIDNIGHT)) {
+        if (by
+            .toLocalTime()
+            .equals(LocalTime.MIDNIGHT)) {
             when = dateFmt.format(by.toLocalDate());
         } else {
             when = dateFmt.format(by.toLocalDate()) + " " + timeFmt.format(by.toLocalTime());

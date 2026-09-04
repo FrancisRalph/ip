@@ -4,9 +4,13 @@ package ralph.model;
  * Represents a simple task with a description and done status.
  */
 public class Task {
-    /** The task description. */
+    /**
+     * The task description.
+     */
     protected String description;
-    /** Whether the task is done. */
+    /**
+     * Whether the task is done.
+     */
     protected boolean isDone;
 
     /**

@@ -49,12 +49,16 @@ public class Ralph {
      * @return the command result as displayed by the UI
      */
     public String getResponse(String input) {
-        if (input == null || input.trim().isEmpty()) {
+        if (input == null || input
+            .trim()
+            .isEmpty()) {
             commandType = "";
             return "Oh no! You didn't say anything — try typing a command.";
         }
 
-        commandType = input.trim().split("\\s+", 2)[0].toLowerCase();
+        commandType = input
+            .trim()
+            .split("\\s+", 2)[0].toLowerCase();
         PrintStream originalOut = System.out;
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         PrintStream capture = new PrintStream(buffer, true, StandardCharsets.UTF_8);
@@ -67,7 +71,9 @@ public class Ralph {
             } catch (RalphException e) {
                 ui.showError(e.getMessage());
             }
-            return buffer.toString(StandardCharsets.UTF_8).trim();
+            return buffer
+                .toString(StandardCharsets.UTF_8)
+                .trim();
         } finally {
             System.setOut(originalOut);
         }
@@ -113,7 +119,7 @@ public class Ralph {
      *
      * @param args command line arguments (ignored)
      */
-    public static void main(String[] args) {
+    static void main(String[] args) {
         new Ralph("data/duke.txt").run();
     }
 }

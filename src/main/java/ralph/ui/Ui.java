@@ -15,13 +15,13 @@ public class Ui {
      */
     public void printBanner() {
         String banner = """
-                         ____       _      _        ____    _   _
-                        |  _ \\     / \\    | |      |  _ \\  | | | |
-                        | |_) |   / _ \\   | |      | |_) | | |_| |
-                        |  _ <   / ___ \\  | |___   |  __/  |  _  |
-                        |_| \\_\\ /_/   \\_\\ |_____|  |_|     |_| |_|
-                        Hello! I'm Ralph.
-                        """;
+             ____       _      _        ____    _   _
+            |  _ \\     / \\    | |      |  _ \\  | | | |
+            | |_) |   / _ \\   | |      | |_) | | |_| |
+            |  _ <   / ___ \\  | |___   |  __/  |  _  |
+            |_| \\_\\ /_/   \\_\\ |_____|  |_|     |_| |_|
+            Hello! I'm Ralph.
+            """;
         System.out.println(banner);
     }
 
@@ -97,7 +97,7 @@ public class Ui {
     /**
      * Notifies the user that a task was added and shows the current total.
      *
-     * @param task the task that was added
+     * @param task  the task that was added
      * @param total the total number of tasks after adding
      */
     public void showAdded(Task task, int total) {
@@ -109,7 +109,7 @@ public class Ui {
     /**
      * Notifies the user that a task was removed and shows the current total.
      *
-     * @param task the task that was removed
+     * @param task  the task that was removed
      * @param total the total number of tasks after removal
      */
     public void showRemoved(Task task, int total) {

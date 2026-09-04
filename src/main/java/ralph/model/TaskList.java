@@ -80,13 +80,20 @@ public class TaskList {
      * @return matching tasks in list order
      */
     public List<Task> find(String keyword) {
-        if (keyword == null || keyword.trim().isEmpty()) {
+        if (keyword == null || keyword
+            .trim()
+            .isEmpty()) {
             return Collections.emptyList();
         }
-        String key = keyword.trim().toLowerCase();
+        String key = keyword
+            .trim()
+            .toLowerCase();
         List<Task> matches = new ArrayList<>();
         for (Task task : tasks) {
-            if (task.getDescription().toLowerCase().contains(key)) {
+            if (task
+                .getDescription()
+                .toLowerCase()
+                .contains(key)) {
                 matches.add(task);
             }
         }

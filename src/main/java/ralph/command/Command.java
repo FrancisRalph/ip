@@ -19,8 +19,8 @@ public interface Command {
     /**
      * Executes the command performing any modifications and interacting with UI/storage as needed.
      *
-     * @param tasks the current task list
-     * @param ui the UI helper used to show messages
+     * @param tasks   the current task list
+     * @param ui      the UI helper used to show messages
      * @param storage storage to persist changes when necessary
      * @return true when the application should exit after this command, false otherwise
      * @throws RalphException on validation or execution errors
@@ -30,7 +30,7 @@ public interface Command {
     /**
      * Helper to persist the current task list to storage, swallowing IO errors with a message.
      *
-     * @param tasks the task list to persist
+     * @param tasks   the task list to persist
      * @param storage the storage implementation used to save
      */
     static void persist(TaskList tasks, Storage storage) {
@@ -83,7 +83,9 @@ public interface Command {
             if (index < 0 || index >= tasks.size()) {
                 throw new RalphException("That task number doesn't exist.");
             }
-            tasks.get(index).markAsDone();
+            tasks
+                .get(index)
+                .markAsDone();
             ui.showMarked(tasks.get(index));
             persist(tasks, storage);
             return false;
@@ -102,7 +104,9 @@ public interface Command {
             if (index < 0 || index >= tasks.size()) {
                 throw new RalphException("That task number doesn't exist.");
             }
-            tasks.get(index).markAsNotDone();
+            tasks
+                .get(index)
+                .markAsNotDone();
             ui.showUnmarked(tasks.get(index));
             persist(tasks, storage);
             return false;
@@ -167,12 +171,12 @@ public interface Command {
             }
             if (by.isEmpty()) {
                 throw new RalphException(
-                        "Please include '/by' with a date/time in yyyy-MM-dd or yyyy-MM-dd HH:mm format."
+                    "Please include '/by' with a date/time in yyyy-MM-dd or yyyy-MM-dd HH:mm format."
                 );
             }
             ralph.model.Deadline deadline = new ralph.model.Deadline(
-                    description,
-                    Parser.parseDateTime(by)
+                description,
+                Parser.parseDateTime(by)
             );
             tasks.add(deadline);
             ui.showAdded(deadline, tasks.size());
@@ -204,9 +208,9 @@ public interface Command {
                 throw new RalphException("An event needs both a start and end time.");
             }
             ralph.model.Event event = new ralph.model.Event(
-                    description,
-                    Parser.parseDateTime(from),
-                    Parser.parseDateTime(to)
+                description,
+                Parser.parseDateTime(from),
+                Parser.parseDateTime(to)
             );
             tasks.add(event);
             ui.showAdded(event, tasks.size());

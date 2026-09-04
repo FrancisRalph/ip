@@ -22,15 +22,23 @@ public class MainWindow extends AnchorPane {
 
     private Ralph ralph;
 
-    private Image userImage = new Image(this.getClass().getResourceAsStream("/images/DaUser.png"));
-    private Image dukeImage = new Image(this.getClass().getResourceAsStream("/images/DaDuke.png"));
+    private final Image userImage = new Image(this
+        .getClass()
+        .getResourceAsStream("/images/DaUser.png"));
+    private final Image dukeImage = new Image(this
+        .getClass()
+        .getResourceAsStream("/images/DaDuke.png"));
 
     @FXML
     public void initialize() {
-        scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
+        scrollPane
+            .vvalueProperty()
+            .bind(dialogContainer.heightProperty());
     }
 
-    /** Injects the Ralph instance */
+    /**
+     * Injects the Ralph instance
+     */
     public void setRalph(Ralph r) {
         ralph = r;
     }
@@ -43,10 +51,12 @@ public class MainWindow extends AnchorPane {
     private void handleUserInput() {
         String input = userInput.getText();
         String response = ralph.getResponse(input);
-        dialogContainer.getChildren().addAll(
+        dialogContainer
+            .getChildren()
+            .addAll(
                 DialogBox.getUserDialog(input, userImage),
                 DialogBox.getDukeDialog(response, dukeImage, ralph.getCommandType())
-        );
+            );
         userInput.clear();
     }
 }
