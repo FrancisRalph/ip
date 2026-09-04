@@ -29,6 +29,9 @@ public class MainWindow extends AnchorPane {
         .getClass()
         .getResourceAsStream("/images/DaDuke.png"));
 
+    /**
+     * Initializes the scroll pane to follow the dialog container as content grows.
+     */
     @FXML
     public void initialize() {
         scrollPane

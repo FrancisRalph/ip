@@ -41,6 +41,9 @@ public interface Command {
         }
     }
 
+    /**
+     * Signals that the application should exit.
+     */
     final class ByeCommand implements Command {
         @Override
         public boolean execute(TaskList tasks, Ui ui, Storage storage) {
@@ -49,6 +52,9 @@ public interface Command {
         }
     }
 
+    /**
+     * Lists all tasks currently stored.
+     */
     final class ListCommand implements Command {
         @Override
         public boolean execute(TaskList tasks, Ui ui, Storage storage) {
@@ -57,9 +63,17 @@ public interface Command {
         }
     }
 
+    /**
+     * Searches for tasks containing a keyword.
+     */
     final class FindCommand implements Command {
         private final String keyword;
 
+        /**
+         * Creates a command that filters tasks by keyword.
+         *
+         * @param keyword the keyword to match against task descriptions
+         */
         public FindCommand(String keyword) {
             this.keyword = keyword;
         }
@@ -71,9 +85,17 @@ public interface Command {
         }
     }
 
+    /**
+     * Marks a task as complete.
+     */
     final class MarkCommand implements Command {
         private final int index;
 
+        /**
+         * Creates a command that marks the task at the given index.
+         *
+         * @param index the zero-based task index to mark as completed
+         */
         public MarkCommand(int index) {
             this.index = index;
         }
@@ -92,9 +114,17 @@ public interface Command {
         }
     }
 
+    /**
+     * Marks a task as not yet done.
+     */
     final class UnmarkCommand implements Command {
         private final int index;
 
+        /**
+         * Creates a command that unmarks the task at the given index.
+         *
+         * @param index the zero-based task index to unmark
+         */
         public UnmarkCommand(int index) {
             this.index = index;
         }
@@ -113,9 +143,17 @@ public interface Command {
         }
     }
 
+    /**
+     * Deletes a task from the list.
+     */
     final class DeleteCommand implements Command {
         private final int index;
 
+        /**
+         * Creates a command that deletes the task at the given index.
+         *
+         * @param index the zero-based task index to remove
+         */
         public DeleteCommand(int index) {
             this.index = index;
         }
@@ -132,9 +170,17 @@ public interface Command {
         }
     }
 
+    /**
+     * Adds a to-do task.
+     */
     final class AddTodoCommand implements Command {
         private final String description;
 
+        /**
+         * Creates a command that adds a to-do task.
+         *
+         * @param description the task description
+         */
         public AddTodoCommand(String description) {
             this.description = description;
         }
@@ -152,10 +198,19 @@ public interface Command {
         }
     }
 
+    /**
+     * Adds a task with a deadline.
+     */
     final class AddDeadlineCommand implements Command {
         private final String description;
         private final String by;
 
+        /**
+         * Creates a command that adds a deadline task.
+         *
+         * @param description the task description
+         * @param by the due date or deadline string
+         */
         public AddDeadlineCommand(String description, String by) {
             this.description = description;
             this.by = by;
@@ -185,11 +240,21 @@ public interface Command {
         }
     }
 
+    /**
+     * Adds an event task.
+     */
     final class AddEventCommand implements Command {
         private final String description;
         private final String from;
         private final String to;
 
+        /**
+         * Creates a command that adds an event task.
+         *
+         * @param description the event description
+         * @param from the starting date-time string
+         * @param to the ending date-time string
+         */
         public AddEventCommand(String description, String from, String to) {
             this.description = description;
             this.from = from;

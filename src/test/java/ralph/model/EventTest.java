@@ -15,7 +15,7 @@ class EventTest {
     }
 
     @Test
-    void toString_fromMidnight_toWithTime_timeShown() {
+    void toString_fromMidnightToWithTime_timeShown() {
         Event e = new Event("conference", LocalDateTime.of(2023, 9, 1, 0, 0), LocalDateTime.of(2023, 9, 1, 18, 30));
         assertEquals("[E][ ] conference (from: Sept 01 2023 to: Sept 01 2023 18:30)", e.toString());
     }
