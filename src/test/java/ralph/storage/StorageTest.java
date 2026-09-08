@@ -19,7 +19,7 @@ import ralph.model.Todo;
 
 class StorageTest {
     @Test
-    void saveAndLoad_roundTripsStoredTasks() throws IOException {
+    void saveAndLoad_validTasks_roundTripsSuccessfully() throws IOException {
         Path tempFile = Files.createTempFile("ralph-storage", ".txt");
         Storage storage = new Storage(tempFile.toString());
 
@@ -42,7 +42,7 @@ class StorageTest {
     }
 
     @Test
-    void load_ignoresMalformedLines() throws IOException {
+    void load_malformedLines_ignoresMalformedEntries() throws IOException {
         Path tempFile = Files.createTempFile("ralph-storage-malformed", ".txt");
         Files.write(
             tempFile,
