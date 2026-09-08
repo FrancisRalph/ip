@@ -26,29 +26,29 @@ public class CommandHandler {
         String rest = parsed.args();
 
         switch (command) {
-        case "bye":
-            return new Command.ByeCommand();
-        case "list":
-            return new Command.ListCommand();
-        case "find":
-            return new Command.FindCommand(Parser.getRequiredDescription(rest, "find"));
-        case "mark":
-            return new Command.MarkCommand(Parser.parseTaskIndex(rest, "mark"));
-        case "unmark":
-            return new Command.UnmarkCommand(Parser.parseTaskIndex(rest, "unmark"));
-        case "delete":
-            return new Command.DeleteCommand(Parser.parseTaskIndex(rest, "delete"));
-        case "todo":
-            return new Command.AddTodoCommand(Parser.getRequiredDescription(rest, "todo"));
-        case "deadline":
-            return parseDeadlineCommand(rest);
-        case "event":
-            return parseEventCommand(rest);
-        default:
-            throw new RalphException(
-                "I don't recognise that command. Try: list, find, todo, deadline, event, "
-                    + "mark, unmark, delete, bye."
-            );
+            case "bye":
+                return new Command.ByeCommand();
+            case "list":
+                return new Command.ListCommand();
+            case "find":
+                return new Command.FindCommand(Parser.getRequiredDescription(rest, "find"));
+            case "mark":
+                return new Command.MarkCommand(Parser.parseTaskIndex(rest, "mark"));
+            case "unmark":
+                return new Command.UnmarkCommand(Parser.parseTaskIndex(rest, "unmark"));
+            case "delete":
+                return new Command.DeleteCommand(Parser.parseTaskIndex(rest, "delete"));
+            case "todo":
+                return new Command.AddTodoCommand(Parser.getRequiredDescription(rest, "todo"));
+            case "deadline":
+                return parseDeadlineCommand(rest);
+            case "event":
+                return parseEventCommand(rest);
+            default:
+                throw new RalphException(
+                    "I don't recognise that command. Try: list, find, todo, deadline, event, "
+                        + "mark, unmark, delete, bye."
+                );
         }
     }
 

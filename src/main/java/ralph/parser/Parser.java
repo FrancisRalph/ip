@@ -69,16 +69,16 @@ public class Parser {
         }
 
         switch (command) {
-        case "todo":
-            throw new RalphException("Give me a description for your todo, please.");
-        case "deadline":
-            throw new RalphException("Give me what the deadline is for.");
-        case "event":
-            throw new RalphException("Give me a description for the event, please.");
-        case "find":
-            throw new RalphException("Please tell me what to search for.");
-        default:
-            return "";
+            case "todo":
+                throw new RalphException("Give me a description for your todo, please.");
+            case "deadline":
+                throw new RalphException("Give me what the deadline is for.");
+            case "event":
+                throw new RalphException("Give me a description for the event, please.");
+            case "find":
+                throw new RalphException("Please tell me what to search for.");
+            default:
+                return "";
         }
     }
 

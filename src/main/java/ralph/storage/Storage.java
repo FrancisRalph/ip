@@ -101,14 +101,14 @@ public class Storage {
         boolean done = DONE.equals(parts[1]);
         try {
             switch (type) {
-            case TYPE_TODO:
-                return parseTodo(parts, done);
-            case TYPE_DEADLINE:
-                return parseDeadline(parts, done);
-            case TYPE_EVENT:
-                return parseEvent(parts, done);
-            default:
-                return null;
+                case TYPE_TODO:
+                    return parseTodo(parts, done);
+                case TYPE_DEADLINE:
+                    return parseDeadline(parts, done);
+                case TYPE_EVENT:
+                    return parseEvent(parts, done);
+                default:
+                    return null;
             }
         } catch (IllegalArgumentException ex) {
             System.out.println(" Warning: skipping malformed saved task: " + line);
