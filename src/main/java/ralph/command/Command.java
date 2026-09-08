@@ -56,9 +56,31 @@ public interface Command {
      * Lists all tasks currently stored.
      */
     final class ListCommand implements Command {
+        private final String sortKey;
+
+        /**
+         * Creates an unsorted list command.
+         */
+        public ListCommand() {
+            this.sortKey = "";
+        }
+
+        /**
+         * Creates a list command that requests sorting by the given key.
+         *
+         * @param sortKey sort criterion (e.g. "deadline", "status"); empty/blank means no sorting
+         */
+        public ListCommand(String sortKey) {
+            this.sortKey = sortKey == null ? "" : sortKey.trim();
+        }
+
         @Override
-        public boolean execute(TaskList tasks, Ui ui, Storage storage) {
-            ui.printTaskList(tasks.getAll());
+        public boolean execute(TaskList tasks, Ui ui, Storage storage) throws ralph.exception.RalphException {
+            if (sortKey == null || sortKey.isBlank()) {
+                ui.printTaskList(tasks.getAll());
+            } else {
+                ui.printTaskList(tasks.getAllSorted(sortKey));
+            }
             return false;
         }
     }

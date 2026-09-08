@@ -29,7 +29,19 @@ public class CommandHandler {
             case "bye":
                 return new Command.ByeCommand();
             case "list":
-                return new Command.ListCommand();
+                if (rest == null || rest.isEmpty()) {
+                    return new Command.ListCommand();
+                }
+                // Expect syntax: /by <key>
+                String low = rest.toLowerCase();
+                if (!low.startsWith("/by")) {
+                    throw new RalphException("I can sort by deadline or status only.");
+                }
+                String key = rest.length() > 3 ? rest.substring(3).trim() : "";
+                if (key.isEmpty()) {
+                    throw new RalphException("I can sort by deadline or status only.");
+                }
+                return new Command.ListCommand(key);
             case "find":
                 return new Command.FindCommand(Parser.getRequiredDescription(rest, "find"));
             case "mark":
