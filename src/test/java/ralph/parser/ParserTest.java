@@ -38,6 +38,12 @@ class ParserTest {
     }
 
     @Test
+    void parseTaskIndex_nonPositive_throws() {
+        assertThrows(RalphException.class, () -> Parser.parseTaskIndex("0", "mark"));
+        assertThrows(RalphException.class, () -> Parser.parseTaskIndex("-3", "mark"));
+    }
+
+    @Test
     void parseTaskIndex_numeric_returnsZeroBased() {
         try {
             int idx = Parser.parseTaskIndex("2", "mark");
