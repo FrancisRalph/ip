@@ -36,14 +36,22 @@ public class Parser {
      * @throws RalphException when the supplied value is empty or not a number
      */
     public static int parseTaskIndex(String value, String command) throws RalphException {
-        if (value.isEmpty()) {
+        if (value == null || value.trim().isEmpty()) {
             throw new RalphException("Which task number? Say e.g. 'mark 2'.");
         }
+
+        int parsedIndex;
         try {
-            return Integer.parseInt(value) - 1;
+            parsedIndex = Integer.parseInt(value.trim());
         } catch (NumberFormatException e) {
             throw new RalphException("That's not a number — give me a task index like '2'.");
         }
+
+        if (parsedIndex <= 0) {
+            throw new RalphException("Task number must be positive — give me a task index like '2'.");
+        }
+
+        return parsedIndex - 1;
     }
 
     /**
@@ -55,23 +63,23 @@ public class Parser {
      * @throws RalphException when the description is missing or empty
      */
     public static String getRequiredDescription(String value, String command) throws RalphException {
-        if (value == null || value
-            .trim()
-            .isEmpty()) {
-            if ("todo".equals(command)) {
-                throw new RalphException("Give me a description for your todo, please.");
-            }
-            if ("deadline".equals(command)) {
-                throw new RalphException("Give me what the deadline is for.");
-            }
-            if ("event".equals(command)) {
-                throw new RalphException("Give me a description for the event, please.");
-            }
-            if ("find".equals(command)) {
-                throw new RalphException("Please tell me what to search for.");
-            }
+        String trimmed = value == null ? "" : value.trim();
+        if (!trimmed.isEmpty()) {
+            return trimmed;
         }
-        return value.trim();
+
+        switch (command) {
+        case "todo":
+            throw new RalphException("Give me a description for your todo, please.");
+        case "deadline":
+            throw new RalphException("Give me what the deadline is for.");
+        case "event":
+            throw new RalphException("Give me a description for the event, please.");
+        case "find":
+            throw new RalphException("Please tell me what to search for.");
+        default:
+            return "";
+        }
     }
 
     /**
