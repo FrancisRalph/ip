@@ -20,6 +20,12 @@ import ralph.model.Todo;
  * Responsible for loading and saving tasks to a file.
  */
 public class Storage {
+    private static final String TYPE_TODO = "T";
+    private static final String TYPE_DEADLINE = "D";
+    private static final String TYPE_EVENT = "E";
+    private static final String DONE = "1";
+    private static final String SEPARATOR = " | ";
+
     private final Path dataDir;
     private final Path dataFile;
 
@@ -29,9 +35,9 @@ public class Storage {
      * @param filePath path to the data file (may include a directory)
      */
     public Storage(String filePath) {
-        Path p = Paths.get(filePath);
-        this.dataDir = p.getParent() == null ? Paths.get(".") : p.getParent();
-        this.dataFile = p;
+        Path path = Paths.get(filePath);
+        this.dataDir = path.getParent() == null ? Paths.get(".") : path.getParent();
+        this.dataFile = path;
     }
 
     /**
@@ -45,62 +51,16 @@ public class Storage {
         if (!Files.exists(dataFile)) {
             return tasks;
         }
+
         List<String> lines = Files.readAllLines(dataFile);
         for (String line : lines) {
-            if (line == null || line
-                .trim()
-                .isEmpty()) {
+            if (isBlank(line)) {
                 continue;
             }
-            String[] parts = line.split("\\s*\\|\\s*", -1);
-            String type = parts.length > 0 ? parts[0] : "";
-            boolean done = parts.length > 1 && "1".equals(parts[1]);
-            try {
-                switch (type) {
-                    case "T": {
-                        String desc = parts.length > 2 ? parts[2] : "";
-                        Todo t = new Todo(desc);
-                        if (done) {
-                            t.markAsDone();
-                        }
-                        tasks.add(t);
-                        break;
-                    }
-                    case "D": {
-                        String desc = parts.length > 2 ? parts[2] : "";
-                        String byStr = parts.length > 3 ? parts[3] : "";
-                        LocalDateTime byDt = tryParseDateTime(byStr);
-                        if (byDt == null) {
-                            throw new IllegalArgumentException("Invalid date/time");
-                        }
-                        Deadline d = new Deadline(desc, byDt);
-                        if (done) {
-                            d.markAsDone();
-                        }
-                        tasks.add(d);
-                        break;
-                    }
-                    case "E": {
-                        String desc = parts.length > 2 ? parts[2] : "";
-                        String fromStr = parts.length > 3 ? parts[3] : "";
-                        String toStr = parts.length > 4 ? parts[4] : "";
-                        LocalDateTime fromDt = tryParseDateTime(fromStr);
-                        LocalDateTime toDt = tryParseDateTime(toStr);
-                        if (fromDt == null || toDt == null) {
-                            throw new IllegalArgumentException("Invalid date/time");
-                        }
-                        Event e = new Event(desc, fromDt, toDt);
-                        if (done) {
-                            e.markAsDone();
-                        }
-                        tasks.add(e);
-                        break;
-                    }
-                    default:
-                        break;
-                }
-            } catch (Exception ex) {
-                System.out.println(" Warning: skipping malformed saved task: " + line);
+
+            Task parsed = parseStoredTask(line);
+            if (parsed != null) {
+                tasks.add(parsed);
             }
         }
         return tasks;
@@ -117,22 +77,100 @@ public class Storage {
             Files.createDirectories(dataDir);
         }
         try (BufferedWriter writer = Files.newBufferedWriter(dataFile)) {
-            for (Task t : tasks) {
-                String line = null;
-                String doneFlag = (t.isDone() ? "1" : "0");
-                if (t instanceof Todo) {
-                    line = "T | " + doneFlag + " | " + t.getDescription();
-                } else if (t instanceof Deadline d) {
-                    line = "D | " + doneFlag + " | " + d.getDescription() + " | " + d.getBy();
-                } else if (t instanceof Event e) {
-                    line = "E | " + doneFlag + " | " + e.getDescription() + " | " + e.getFrom() + " | " + e.getTo();
-                }
+            for (Task task : tasks) {
+                String line = formatTask(task);
                 if (line != null) {
                     writer.write(line);
                     writer.newLine();
                 }
             }
         }
+    }
+
+    private boolean isBlank(String line) {
+        return line == null || line.trim().isEmpty();
+    }
+
+    private Task parseStoredTask(String line) {
+        String[] parts = line.split("\\s*\\|\\s*", -1);
+        if (parts.length < 2) {
+            return null;
+        }
+
+        String type = parts[0];
+        boolean done = DONE.equals(parts[1]);
+        try {
+            switch (type) {
+            case TYPE_TODO:
+                return parseTodo(parts, done);
+            case TYPE_DEADLINE:
+                return parseDeadline(parts, done);
+            case TYPE_EVENT:
+                return parseEvent(parts, done);
+            default:
+                return null;
+            }
+        } catch (IllegalArgumentException ex) {
+            System.out.println(" Warning: skipping malformed saved task: " + line);
+            return null;
+        }
+    }
+
+    private static Todo parseTodo(String[] parts, boolean done) {
+        String description = parts.length > 2 ? parts[2] : "";
+        Todo todo = new Todo(description);
+        if (done) {
+            todo.markAsDone();
+        }
+        return todo;
+    }
+
+    private static Deadline parseDeadline(String[] parts, boolean done) {
+        String description = parts.length > 2 ? parts[2] : "";
+        String byText = parts.length > 3 ? parts[3] : "";
+        LocalDateTime by = tryParseDateTime(byText);
+        if (by == null) {
+            throw new IllegalArgumentException("Invalid date/time");
+        }
+
+        Deadline deadline = new Deadline(description, by);
+        if (done) {
+            deadline.markAsDone();
+        }
+        return deadline;
+    }
+
+    private static Event parseEvent(String[] parts, boolean done) {
+        String description = parts.length > 2 ? parts[2] : "";
+        String fromText = parts.length > 3 ? parts[3] : "";
+        String toText = parts.length > 4 ? parts[4] : "";
+        LocalDateTime from = tryParseDateTime(fromText);
+        LocalDateTime to = tryParseDateTime(toText);
+        if (from == null || to == null) {
+            throw new IllegalArgumentException("Invalid date/time");
+        }
+
+        Event event = new Event(description, from, to);
+        if (done) {
+            event.markAsDone();
+        }
+        return event;
+    }
+
+    private static String formatTask(Task task) {
+        String doneFlag = task.isDone() ? DONE : "0";
+        if (task instanceof Todo) {
+            return TYPE_TODO + SEPARATOR + doneFlag + SEPARATOR + task.getDescription();
+        }
+        if (task instanceof Deadline deadline) {
+            return TYPE_DEADLINE + SEPARATOR + doneFlag + SEPARATOR + deadline.getDescription() + SEPARATOR
+                + deadline.getBy();
+        }
+        if (task instanceof Event event) {
+            return TYPE_EVENT + SEPARATOR + doneFlag + SEPARATOR + event.getDescription() + SEPARATOR
+                + event.getFrom() + SEPARATOR + event.getTo();
+        }
+        return null;
     }
 
     /**
