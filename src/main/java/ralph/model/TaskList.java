@@ -77,6 +77,66 @@ public class TaskList {
     }
 
     /**
+     * Returns an in-memory sorted view of the task list according to the given criterion.
+     * Supported criteria: "deadline", "status". The original task ordering is preserved
+     * for equal keys (stable sort). The underlying stored list is not modified.
+     *
+     * @param criterion the sort key, case-insensitive
+     * @return a new list containing tasks in the requested order
+     * @throws ralph.exception.RalphException if the criterion is not supported
+     */
+    public List<Task> getAllSorted(String criterion) throws ralph.exception.RalphException {
+        String key = criterion == null ? "" : criterion.trim().toLowerCase();
+        List<Task> copy = new ArrayList<>(tasks);
+        switch (key) {
+            case "":
+                return Collections.unmodifiableList(copy);
+            case "deadline": {
+                // Tasks with a date/time (Deadline/Event) come first ordered earliest->latest;
+                // tasks without date/time follow. Use a stable sort so original relative order
+                // is preserved for equal timestamps and for undated tasks.
+                java.util.Comparator<Task> cmp = (a, b) -> {
+                    java.time.LocalDateTime ta = extractDateTime(a);
+                    java.time.LocalDateTime tb = extractDateTime(b);
+                    if (ta == null && tb == null) {
+                        return 0;
+                    }
+                    if (ta == null) {
+                        return 1; // a after b
+                    }
+                    if (tb == null) {
+                        return -1; // a before b
+                    }
+                    return ta.compareTo(tb);
+                };
+                copy.sort(cmp); // Java sort is stable
+                return Collections.unmodifiableList(copy);
+            }
+            case "status": {
+                // incomplete (isDone==false) first, completed after; preserve relative order within groups
+                java.util.Comparator<Task> cmp = java.util.Comparator.comparing(Task::isDone);
+                copy.sort(cmp);
+                return Collections.unmodifiableList(copy);
+            }
+            default:
+                throw new ralph.exception.RalphException("I can sort by deadline or status only.");
+        }
+    }
+
+    /**
+     * Helper to extract the primary date/time from a task: Deadline -> getBy(), Event -> getFrom(), else null.
+     */
+    private static java.time.LocalDateTime extractDateTime(Task t) {
+        if (t instanceof Deadline) {
+            return ((Deadline) t).getBy();
+        }
+        if (t instanceof Event) {
+            return ((Event) t).getFrom();
+        }
+        return null;
+    }
+
+    /**
      * Finds tasks whose descriptions contain the given keyword, ignoring case.
      *
      * @param keyword the keyword to search for
