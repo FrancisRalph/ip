@@ -24,6 +24,7 @@ public class Parser {
         String[] parts = trimmed.split("\\s+", 2);
         String command = parts[0].toLowerCase();
         String rest = parts.length > 1 ? parts[1].trim() : "";
+        assert command != null && !command.isEmpty() : "Parsed command must not be empty";
         return new Parsed(command, rest);
     }
 
@@ -51,7 +52,9 @@ public class Parser {
             throw new RalphException("Task number must be positive — give me a task index like '2'.");
         }
 
-        return parsedIndex - 1;
+        int zeroBasedIndex = parsedIndex - 1;
+        assert zeroBasedIndex >= 0 : "Parsed task index must be zero-based and non-negative";
+        return zeroBasedIndex;
     }
 
     /**
