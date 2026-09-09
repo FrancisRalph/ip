@@ -1,8 +1,6 @@
 package ralph.model;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 
 /**
  * An Event task: stores start and end as java.time.LocalDateTime.
@@ -52,18 +50,8 @@ public class Event extends Task {
      */
     @Override
     public String toString() {
-        DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("MMM dd yyyy");
-        DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("HH:mm");
-        String fromStr = from
-            .toLocalTime()
-            .equals(LocalTime.MIDNIGHT)
-            ? dateFmt.format(from.toLocalDate())
-            : dateFmt.format(from.toLocalDate()) + " " + timeFmt.format(from.toLocalTime());
-        String toStr = to
-            .toLocalTime()
-            .equals(LocalTime.MIDNIGHT)
-            ? dateFmt.format(to.toLocalDate())
-            : dateFmt.format(to.toLocalDate()) + " " + timeFmt.format(to.toLocalTime());
+        String fromStr = DateTimeUtil.formatDateOrDateTime(from);
+        String toStr = DateTimeUtil.formatDateOrDateTime(to);
         return "[E]" + super.toString() + " (from: " + fromStr + " to: " + toStr + ")";
     }
 }
