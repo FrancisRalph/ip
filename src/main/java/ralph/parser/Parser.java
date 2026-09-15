@@ -95,9 +95,10 @@ public class Parser {
     public static LocalDateTime parseDateTime(String input) throws RalphException {
         LocalDateTime dt = tryParseDateTime(input);
         if (dt == null) {
+            String in = input == null ? "" : input.trim();
             throw new RalphException(
-                "Could not parse date/time. Use yyyy-MM-dd or yyyy-MM-dd HH:mm "
-                    + "(e.g. 2019-10-15 or 2019-10-15 18:00)"
+                "Could not parse date/time: '" + in + "'. Use yyyy-MM-dd or yyyy-MM-dd HH:mm "
+                    + "(e.g. 2019-10-15 or 2019-10-15 18:00). Check the date is valid (e.g., Feb 30 is invalid)."
             );
         }
         return dt;

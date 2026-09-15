@@ -1,6 +1,7 @@
 package ralph.command;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 import ralph.exception.RalphException;
 import ralph.model.Task;
@@ -294,10 +295,15 @@ public interface Command {
             if (from.isEmpty() || to.isEmpty()) {
                 throw new RalphException("An event needs both a start and end time.");
             }
+            LocalDateTime start = Parser.parseDateTime(from);
+            LocalDateTime end = Parser.parseDateTime(to);
+            if (!start.isBefore(end)) {
+                throw new RalphException("Event start must be before the end time.");
+            }
             ralph.model.Event event = new ralph.model.Event(
                 description,
-                Parser.parseDateTime(from),
-                Parser.parseDateTime(to)
+                start,
+                end
             );
             tasks.add(event);
             ui.showAdded(event, tasks.size());
