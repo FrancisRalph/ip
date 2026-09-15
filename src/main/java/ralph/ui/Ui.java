@@ -13,16 +13,26 @@ public class Ui {
     /**
      * Prints an ASCII banner welcoming the user.
      */
+    private static final String BANNER = """
+         ____       _      _        ____    _   _
+        |  _ \\     / \\    | |      |  _ \\  | | | |
+        | |_) |   / _ \\   | |      | |_) | | |_| |
+        |  _ <   / ___ \\  | |___   |  __/  |  _  |
+        |_| \\_\\ /_/   \\_\\ |_____|  |_|     |_| |_|
+        Hello! I'm Ralph.
+        """;
+
     public void printBanner() {
-        String banner = """
-             ____       _      _        ____    _   _
-            |  _ \\     / \\    | |      |  _ \\  | | | |
-            | |_) |   / _ \\   | |      | |_) | | |_| |
-            |  _ <   / ___ \\  | |___   |  __/  |  _  |
-            |_| \\_\\ /_/   \\_\\ |_____|  |_|     |_| |_|
-            Hello! I'm Ralph.
-            """;
-        System.out.println(banner);
+        System.out.println(BANNER);
+    }
+
+    /**
+     * Returns the banner text used by the CLI so the GUI can reuse it.
+     *
+     * @return the banner string
+     */
+    public String getBanner() {
+        return BANNER;
     }
 
     /**

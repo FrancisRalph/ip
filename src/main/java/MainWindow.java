@@ -44,6 +44,11 @@ public class MainWindow extends AnchorPane {
      */
     public void setRalph(Ralph r) {
         ralph = r;
+        // show initial banner message from Ralph (mirrors CLI startup)
+        String banner = ralph.getBanner();
+        dialogContainer
+            .getChildren()
+            .add(DialogBox.getRalphDialog(banner, ralphImage, ""));
     }
 
     /**
