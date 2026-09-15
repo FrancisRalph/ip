@@ -12,7 +12,7 @@ import ralph.Ralph;
  */
 public class Main extends Application {
 
-    private final Ralph ralph = new Ralph("data/duke.txt");
+    private final Ralph ralph = new Ralph("data/ralph.txt");
 
     @Override
     public void start(Stage stage) {
@@ -20,6 +20,7 @@ public class Main extends Application {
             FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/view/MainWindow.fxml"));
             AnchorPane ap = fxmlLoader.load();
             Scene scene = new Scene(ap);
+            stage.setTitle("Ralph");
             stage.setScene(scene);
             stage.setMinHeight(220);
             stage.setMinWidth(417);

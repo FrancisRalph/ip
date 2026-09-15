@@ -25,7 +25,7 @@ class RalphTest {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             System.setOut(new PrintStream(out));
 
-            Ralph app = new Ralph("data/duke_test.txt");
+            Ralph app = new Ralph("data/ralph_test.txt");
             assertDoesNotThrow(() -> app.run());
         } finally {
             System.setIn(originalIn);

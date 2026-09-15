@@ -25,9 +25,9 @@ public class MainWindow extends AnchorPane {
     private final Image userImage = new Image(this
         .getClass()
         .getResourceAsStream("/images/DaUser.png"));
-    private final Image dukeImage = new Image(this
+    private final Image ralphImage = new Image(this
         .getClass()
-        .getResourceAsStream("/images/DaDuke.png"));
+        .getResourceAsStream("/images/DaRalph.png"));
 
     /**
      * Initializes the scroll pane to follow the dialog container as content grows.
@@ -58,7 +58,7 @@ public class MainWindow extends AnchorPane {
             .getChildren()
             .addAll(
                 DialogBox.getUserDialog(input, userImage),
-                DialogBox.getDukeDialog(response, dukeImage, ralph.getCommandType())
+                DialogBox.getRalphDialog(response, ralphImage, ralph.getCommandType())
             );
         userInput.clear();
     }

@@ -23,7 +23,7 @@ Ralph is a small, focused task manager (todos, deadlines, events). This document
 
 - Supported task types: Todo, Deadline, Event.
 - Basic operations: add, list, find, mark/unmark, delete.
-- Persisted to disk (`data/duke.txt` by default).
+- Persisted to disk (`data/ralph.txt` by default).
 
 ## Quick start
 
@@ -108,7 +108,7 @@ Commands are shown with syntax and a short example. Task indices shown by `list`
 
 ## Storage format (on disk)
 
-- Default file: `data/duke.txt` (configurable by the Ralph constructor).
+- Default file: `data/ralph.txt` (configurable by the Ralph constructor).
 - Each task is saved as a single pipe-separated line:
 
 ```
@@ -173,7 +173,7 @@ List sorted by deadline
 ## Troubleshooting
 
 - Date parsing errors: reformat to `yyyy-MM-dd` or `yyyy-MM-dd HH:mm`.
-- If data file is corrupted, backup/delete `data/duke.txt` and restart (the app will create a fresh file).
+- If data file is corrupted, backup/delete `data/ralph.txt` and restart (the app will create a fresh file).
 - Save errors: check file permissions and available disk space.
 
 ---

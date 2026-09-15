@@ -120,6 +120,6 @@ public class Ralph {
      * @param args command line arguments (ignored)
      */
     static void main(String[] args) {
-        new Ralph("data/duke.txt").run();
+        new Ralph("data/ralph.txt").run();
     }
 }
