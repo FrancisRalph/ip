@@ -65,11 +65,19 @@ public class Ralph {
 
         try {
             System.setOut(capture);
+            boolean shouldExit = false;
             try {
                 Command command = commandHandler.parse(input);
-                command.execute(tasks, ui, storage);
+                shouldExit = command.execute(tasks, ui, storage);
             } catch (RalphException e) {
                 ui.showError(e.getMessage());
+            }
+            if (shouldExit) {
+                try {
+                    javafx.application.Platform.exit();
+                } catch (Throwable t) {
+                    System.exit(0);
+                }
             }
             return buffer
                 .toString(StandardCharsets.UTF_8)
@@ -86,6 +94,15 @@ public class Ralph {
      */
     public String getCommandType() {
         return commandType;
+    }
+
+    /**
+     * Returns the banner text from the UI so GUI can display the same startup banner as the CLI.
+     *
+     * @return the banner string
+     */
+    public String getBanner() {
+        return ui.getBanner();
     }
 
     /**
