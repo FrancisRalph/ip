@@ -28,6 +28,14 @@ class ParserTest {
     }
 
     @Test
+    void parseCommand_singleWord_returnsEmptyArgs() throws RalphException {
+        Parser p = new Parser();
+        Parser.Parsed parsed = p.parseCommand("list");
+        assertEquals("list", parsed.command());
+        assertEquals("", parsed.args());
+    }
+
+    @Test
     void parseTaskIndex_empty_throws() {
         assertThrows(RalphException.class, () -> Parser.parseTaskIndex("", "mark"));
     }
@@ -68,6 +76,13 @@ class ParserTest {
 
         String findRes = Parser.getRequiredDescription("  book  ", "find");
         assertEquals("book", findRes);
+    }
+
+    @Test
+    void getRequiredDescription_unknownCommand_returnsEmptyString() throws RalphException {
+        // Unknown commands are allowed to return an empty string rather than throwing.
+        String res = Parser.getRequiredDescription("", "unknowncmd");
+        assertEquals("", res);
     }
 
     @Test

@@ -55,4 +55,29 @@ class TaskListTest {
             .get(1)
             .getDescription());
     }
+
+    @Test
+    void find_emptyOrBlank_returnsEmptyList() {
+        TaskList tl = new TaskList();
+        tl.add(new Todo("something"));
+        List<Task> r1 = tl.find("");
+        List<Task> r2 = tl.find("   ");
+        List<Task> r3 = tl.find(null);
+        assertEquals(0, r1.size());
+        assertEquals(0, r2.size());
+        assertEquals(0, r3.size());
+    }
+
+    @Test
+    void getAllSorted_emptyCriterion_returnsUnmodifiedList() throws ralph.exception.RalphException {
+        TaskList tl = new TaskList();
+        Todo a = new Todo("a");
+        Todo b = new Todo("b");
+        tl.add(a);
+        tl.add(b);
+        List<Task> sorted = tl.getAllSorted("");
+        assertEquals(2, sorted.size());
+        assertEquals(a, sorted.get(0));
+        assertEquals(b, sorted.get(1));
+    }
 }

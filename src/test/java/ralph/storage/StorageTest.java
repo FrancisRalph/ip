@@ -2,6 +2,7 @@ package ralph.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -59,5 +60,24 @@ class StorageTest {
         assertEquals(1, loaded.size());
         assertEquals("valid task", loaded.get(0).getDescription());
         assertTrue(loaded.get(0).isDone());
+    }
+
+    @Test
+    void tryParseDateTimeForReuse_supportedFormats_areParsed() {
+        LocalDateTime d1 = Storage.tryParseDateTimeForReuse("2023-09-01");
+        assertEquals(LocalDateTime.of(2023, 9, 1, 0, 0), d1);
+
+        LocalDateTime d2 = Storage.tryParseDateTimeForReuse("2023-09-01T07:15");
+        assertEquals(LocalDateTime.of(2023, 9, 1, 7, 15), d2);
+
+        LocalDateTime d3 = Storage.tryParseDateTimeForReuse("2023-09-01 18:30");
+        assertEquals(LocalDateTime.of(2023, 9, 1, 18, 30), d3);
+
+        LocalDateTime d4 = Storage.tryParseDateTimeForReuse("2023-09-01 1830");
+        assertEquals(LocalDateTime.of(2023, 9, 1, 18, 30), d4);
+
+        // unsupported / invalid returns null
+        LocalDateTime bad = Storage.tryParseDateTimeForReuse("not-a-date");
+        assertNull(bad);
     }
 }
